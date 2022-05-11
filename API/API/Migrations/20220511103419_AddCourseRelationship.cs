@@ -9,13 +9,6 @@ namespace API.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Faculty",
-                table: "UsersInformation",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "");
-
             migrationBuilder.CreateTable(
                 name: "Courses",
                 columns: table => new
@@ -24,7 +17,7 @@ namespace API.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TeacherName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Schedule = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue:DateTime.Now)
+                    Schedule = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: DateTime.Now)
                 },
                 constraints: table =>
                 {
@@ -68,10 +61,6 @@ namespace API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Courses");
-
-            migrationBuilder.DropColumn(
-                name: "Faculty",
-                table: "UsersInformation");
         }
     }
 }

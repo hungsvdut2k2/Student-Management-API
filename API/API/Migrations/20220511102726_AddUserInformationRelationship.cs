@@ -22,10 +22,11 @@ namespace API.Migrations
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Dob = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: DateTime.Now),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Dob = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue:DateTime.Now),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Gender = table.Column<bool>(type: "bit", nullable: false)
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Gender = table.Column<bool>(type: "bit", nullable: false),
+                    Faculty = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,7 +36,8 @@ namespace API.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Users_UserInformationId",
                 table: "Users",
-                column: "UserInformationId");
+                column: "UserInformationId",
+                unique: true);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Users_UsersInformation_UserInformationId",

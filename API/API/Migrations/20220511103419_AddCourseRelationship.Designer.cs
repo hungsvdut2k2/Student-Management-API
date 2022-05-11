@@ -12,14 +12,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220510042401_AddEducationalRelationship")]
-    partial class AddEducationalRelationship
+    [Migration("20220511103419_AddCourseRelationship")]
+    partial class AddCourseRelationship
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -65,23 +65,6 @@ namespace API.Migrations
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("API.Models.EducationalProgram", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EducationalProgram");
-                });
-
             modelBuilder.Entity("API.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -112,7 +95,8 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserInformationId");
+                    b.HasIndex("UserInformationId")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -127,9 +111,6 @@ namespace API.Migrations
 
                     b.Property<DateTime>("Dob")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("EducationalProgramId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -157,21 +138,6 @@ namespace API.Migrations
                     b.ToTable("UsersInformation");
                 });
 
-            modelBuilder.Entity("CourseEducationalProgram", b =>
-                {
-                    b.Property<int>("CoursesCourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EducationalProgramId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CoursesCourseId", "EducationalProgramId");
-
-                    b.HasIndex("EducationalProgramId");
-
-                    b.ToTable("CourseEducationalProgram");
-                });
-
             modelBuilder.Entity("CourseUserInformation", b =>
                 {
                     b.Property<int>("CoursesCourseId")
@@ -190,8 +156,8 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.User", b =>
                 {
                     b.HasOne("API.Models.UserInformation", "UserInformation")
-                        .WithMany()
-                        .HasForeignKey("UserInformationId")
+                        .WithOne("User")
+                        .HasForeignKey("API.Models.User", "UserInformationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -200,26 +166,13 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.UserInformation", b =>
                 {
-                    b.HasOne("API.Models.Classroom", null)
+                    b.HasOne("API.Models.Classroom", "Classroom")
                         .WithMany("UserInformation")
                         .HasForeignKey("ClassroomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("CourseEducationalProgram", b =>
-                {
-                    b.HasOne("API.Models.Course", null)
-                        .WithMany()
-                        .HasForeignKey("CoursesCourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Models.EducationalProgram", null)
-                        .WithMany()
-                        .HasForeignKey("EducationalProgramId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Classroom");
                 });
 
             modelBuilder.Entity("CourseUserInformation", b =>
@@ -240,6 +193,12 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.Classroom", b =>
                 {
                     b.Navigation("UserInformation");
+                });
+
+            modelBuilder.Entity("API.Models.UserInformation", b =>
+                {
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

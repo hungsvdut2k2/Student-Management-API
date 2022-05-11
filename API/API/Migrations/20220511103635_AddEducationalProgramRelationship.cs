@@ -4,17 +4,10 @@
 
 namespace API.Migrations
 {
-    public partial class AddEducationalRelationship : Migration
+    public partial class AddEducationalProgramRelationship : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "EducationalProgramId",
-                table: "UsersInformation",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
-
             migrationBuilder.CreateTable(
                 name: "EducationalProgram",
                 columns: table => new
@@ -65,10 +58,6 @@ namespace API.Migrations
 
             migrationBuilder.DropTable(
                 name: "EducationalProgram");
-
-            migrationBuilder.DropColumn(
-                name: "EducationalProgramId",
-                table: "UsersInformation");
         }
     }
 }

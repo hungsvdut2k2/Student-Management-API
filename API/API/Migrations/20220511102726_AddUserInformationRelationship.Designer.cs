@@ -12,41 +12,17 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220510033913_AddCourseRelationship")]
-    partial class AddCourseRelationship
+    [Migration("20220511102726_AddUserInformationRelationship")]
+    partial class AddUserInformationRelationship
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("API.Models.Course", b =>
-                {
-                    b.Property<int>("CourseId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseId"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Schedule")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("TeacherName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CourseId");
-
-                    b.ToTable("Courses");
-                });
 
             modelBuilder.Entity("API.Models.User", b =>
                 {
@@ -78,7 +54,8 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserInformationId");
+                    b.HasIndex("UserInformationId")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -115,44 +92,20 @@ namespace API.Migrations
                     b.ToTable("UsersInformation");
                 });
 
-            modelBuilder.Entity("CourseUserInformation", b =>
-                {
-                    b.Property<int>("CoursesCourseId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserInformationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("CoursesCourseId", "UserInformationUserId");
-
-                    b.HasIndex("UserInformationUserId");
-
-                    b.ToTable("CourseUserInformation");
-                });
-
             modelBuilder.Entity("API.Models.User", b =>
                 {
                     b.HasOne("API.Models.UserInformation", "UserInformation")
-                        .WithMany()
-                        .HasForeignKey("UserInformationId")
+                        .WithOne("User")
+                        .HasForeignKey("API.Models.User", "UserInformationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("UserInformation");
                 });
 
-            modelBuilder.Entity("CourseUserInformation", b =>
+            modelBuilder.Entity("API.Models.UserInformation", b =>
                 {
-                    b.HasOne("API.Models.Course", null)
-                        .WithMany()
-                        .HasForeignKey("CoursesCourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Models.UserInformation", null)
-                        .WithMany()
-                        .HasForeignKey("UserInformationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.Navigation("User")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

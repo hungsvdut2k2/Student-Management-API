@@ -12,17 +12,34 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220510033533_AddUserInformationRelationship")]
-    partial class AddUserInformationRelationship
+    [Migration("20220511103035_AddClassroomRelationship")]
+    partial class AddClassroomRelationship
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("API.Models.Classroom", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Classrooms");
+                });
 
             modelBuilder.Entity("API.Models.User", b =>
                 {
@@ -54,7 +71,8 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserInformationId");
+                    b.HasIndex("UserInformationId")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -64,10 +82,17 @@ namespace API.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("ClassroomId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Dob")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Faculty")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -84,18 +109,42 @@ namespace API.Migrations
 
                     b.HasKey("UserId");
 
+                    b.HasIndex("ClassroomId");
+
                     b.ToTable("UsersInformation");
                 });
 
             modelBuilder.Entity("API.Models.User", b =>
                 {
                     b.HasOne("API.Models.UserInformation", "UserInformation")
-                        .WithMany()
-                        .HasForeignKey("UserInformationId")
+                        .WithOne("User")
+                        .HasForeignKey("API.Models.User", "UserInformationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("UserInformation");
+                });
+
+            modelBuilder.Entity("API.Models.UserInformation", b =>
+                {
+                    b.HasOne("API.Models.Classroom", "Classroom")
+                        .WithMany("UserInformation")
+                        .HasForeignKey("ClassroomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Classroom");
+                });
+
+            modelBuilder.Entity("API.Models.Classroom", b =>
+                {
+                    b.Navigation("UserInformation");
+                });
+
+            modelBuilder.Entity("API.Models.UserInformation", b =>
+                {
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -9,8 +9,6 @@ namespace API.Models
         public string Name { get; set; }
         public string TeacherName { get; set; }
         public DateTime Schedule { get; set; }
-
-        //Add User Information and Course relationship : n -> n
         public List<UserInformation> UserInformation { get; set; }
         public List<EducationalProgram> EducationalProgram { get; set; }
     }
