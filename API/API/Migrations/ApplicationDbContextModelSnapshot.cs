@@ -41,7 +41,7 @@ namespace API.Migrations
 
                     b.HasIndex("FacultyId");
 
-                    b.ToTable("Classrooms");
+                    b.ToTable("Classrooms", (string)null);
                 });
 
             modelBuilder.Entity("API.Models.Course", b =>
@@ -65,7 +65,7 @@ namespace API.Migrations
 
                     b.HasKey("CourseId");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
             modelBuilder.Entity("API.Models.EducationalProgram", b =>
@@ -82,7 +82,7 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EducationalProgram");
+                    b.ToTable("EducationalProgram", (string)null);
                 });
 
             modelBuilder.Entity("API.Models.Faculty", b =>
@@ -99,7 +99,7 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Faculty");
+                    b.ToTable("Faculty", (string)null);
                 });
 
             modelBuilder.Entity("API.Models.User", b =>
@@ -135,7 +135,7 @@ namespace API.Migrations
                     b.HasIndex("UserInformationId")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("API.Models.UserInformation", b =>
@@ -168,7 +168,7 @@ namespace API.Migrations
 
                     b.HasIndex("ClassroomId");
 
-                    b.ToTable("UsersInformation");
+                    b.ToTable("UsersInformation", (string)null);
                 });
 
             modelBuilder.Entity("CourseEducationalProgram", b =>
@@ -183,7 +183,7 @@ namespace API.Migrations
 
                     b.HasIndex("EducationalProgramId");
 
-                    b.ToTable("CourseEducationalProgram");
+                    b.ToTable("CourseEducationalProgram", (string)null);
                 });
 
             modelBuilder.Entity("CourseUserInformation", b =>
@@ -198,7 +198,7 @@ namespace API.Migrations
 
                     b.HasIndex("UserInformationUserId");
 
-                    b.ToTable("CourseUserInformation");
+                    b.ToTable("CourseUserInformation", (string)null);
                 });
 
             modelBuilder.Entity("API.Models.Classroom", b =>

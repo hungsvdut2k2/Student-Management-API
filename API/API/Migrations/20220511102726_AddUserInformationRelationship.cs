@@ -13,7 +13,7 @@ namespace API.Migrations
                 name: "UserInformationId",
                 table: "Users",
                 type: "nvarchar(450)",
-                nullable: false,
+                nullable: true,
                 defaultValue: "");
 
             migrationBuilder.CreateTable(

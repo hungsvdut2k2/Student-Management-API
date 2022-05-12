@@ -1,4 +1,6 @@
-﻿namespace API.Models
+﻿using System.Text.Json.Serialization;
+
+namespace API.Models
 {
     public class User
     {
@@ -7,6 +9,7 @@
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public string Role { get; set; }
+        [JsonIgnore]
         public UserInformation UserInformation { get; set; }
         public string UserInformationId { get; set; }
     }
