@@ -11,7 +11,6 @@ namespace API.Models
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public bool Gender { get; set; }
-        public string Faculty { get; set; }
         public User User { get; set; }
         public Classroom Classroom { get; set; }
         public int ClassroomId { get; set; }
