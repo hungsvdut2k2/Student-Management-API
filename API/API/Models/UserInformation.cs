@@ -19,6 +19,6 @@ namespace API.Models
         [JsonIgnore]
         public int ClassroomId { get; set; }
         [JsonIgnore]
-        public List<Course> Courses { get; set; }
+        public List<CourseClassroom> CourseClassrooms { get; set; }
     }
 }

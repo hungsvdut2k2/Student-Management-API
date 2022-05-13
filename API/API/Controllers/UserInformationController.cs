@@ -63,7 +63,7 @@ namespace API.Controllers
                 Gender = request.Gender,
                 PhoneNumber = request.PhoneNumber,
                 Classroom = classroom,
-                Courses = null
+                CourseClassrooms = null
             };
             await _context.UsersInformation.AddAsync(newUserInformation);
             await _context.SaveChangesAsync();
