@@ -12,14 +12,14 @@ namespace API.Controllers
     public class ClassroomController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        [HttpGet("GetAllClasss")]
-        public async Task<ActionResult<IEnumerable<Classroom>>> Get()
-        {
-            return _context.Classrooms.ToList();
-        }
         public ClassroomController(ApplicationDbContext context)
         {
             _context = context;
+        }
+        [HttpGet("GetAllClass")]
+        public async Task<ActionResult<IEnumerable<Classroom>>> Get()
+        {
+            return _context.Classrooms.ToList();
         }
         [HttpGet("GetClassroomById")]
         public async Task<ActionResult<Classroom>> GetClassroomById(int Id)

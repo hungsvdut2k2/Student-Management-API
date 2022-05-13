@@ -102,6 +102,24 @@ namespace API.Controllers
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
         }
-       
+        [HttpPut("ResetPassword")]
+        public async Task<ActionResult<User>> ResetPassword(ResetPassowordDto request)
+        {
+            User user = await _context.Users.Where(w => w.Username == request.Username).FirstAsync();
+            if(user == null)
+            {
+                return NotFound();
+            }
+            UserInformation userInformation = await _context.UsersInformation.Where(w => w.UserId == user.UserInformationId).FirstOrDefaultAsync();
+            if(userInformation.PhoneNumber != request.PhoneNumber || userInformation.Email != request.Email)
+            {
+                return BadRequest("Uncertain Information");
+            }
+            CreatePasswordHash(request.newPassword, out byte[] passwordHash, out byte[] passwordSalt);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            await _context.SaveChangesAsync();
+            return Ok(user);
+        }
     }
 }
