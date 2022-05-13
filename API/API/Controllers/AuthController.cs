@@ -1,4 +1,6 @@
-﻿using System.Security.Cryptography;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using API.Data;
 using API.Models;
 using API.Models.DtoModels;
@@ -6,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers
 {
@@ -52,8 +55,7 @@ namespace API.Controllers
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
-
-        [HttpGet("Get Account By Id")]
+        [HttpGet("GetAccountById")]
         public async Task<ActionResult<User>> Get(int id)
         {
             var user = await _context.Users.FindAsync(id);
@@ -61,5 +63,45 @@ namespace API.Controllers
                 return NotFound();
             return Ok(user);
         }
+        [HttpPost("Login")]
+        public async Task<ActionResult<string>> Login(LoginDto request)
+        {
+            User user = await _context.Users.Where(w => w.Username == request.Username).FirstAsync();
+            if(user == null)
+            {
+                return NotFound();
+            }
+            if(Verified(request.Password, user.PasswordHash, user.PasswordSalt) == true)
+            {
+                string token = CreateToken(user);
+                return Ok(token);
+            }
+            return BadRequest("Wrong Password");
+        }
+        private bool Verified(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512(passwordSalt))
+            {
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                return computedHash.SequenceEqual(passwordHash);
+            }
+        }
+        private string CreateToken(User user)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, "Admin")
+            };
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: cred);
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            return jwt;
+        }
+       
     }
 }
