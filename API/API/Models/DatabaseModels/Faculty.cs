@@ -1,4 +1,4 @@
-﻿namespace API.Models
+﻿namespace API.Models.DatabaseModels
 {
     public class Faculty
     {

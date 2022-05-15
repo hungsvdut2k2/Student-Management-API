@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using API.Data;
-using API.Models;
+using API.Models.DatabaseModels;
 using API.Models.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -28,11 +28,20 @@ namespace API.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult<User>> Register(RegisterDto request)
         {
-            var userInformation = await _context.UsersInformation.FindAsync(request.UserInformationId);
-            if (userInformation == null)
+            Classroom classroom = await _context.Classrooms.FindAsync(request.ClassroomId);
+            var userInformation = new UserInformation
             {
-                return NotFound();
-            }
+                UserId = request.UserInformationId,
+                Name = string.Empty,
+                Dob = DateTime.Now,
+                PhoneNumber = string.Empty,
+                Email = string.Empty,
+                Gender = true,
+                Classroom = classroom,
+                CourseClassrooms = null
+            };
+            _context.UsersInformation.Add(userInformation);
+            await _context.SaveChangesAsync();
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
             var user = new User
             {
@@ -103,7 +112,7 @@ namespace API.Controllers
             return jwt;
         }
         [HttpPut("ResetPassword")]
-        public async Task<ActionResult<User>> ResetPassword(ResetPassowordDto request)
+        public async Task<ActionResult<User>> ResetPassword(ResetPasswordDto request)
         {
             User user = await _context.Users.Where(w => w.Username == request.Username).FirstAsync();
             if(user == null)

@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using API.Models;
 using API.Data;
-using API.Models;
 using API.Models.DtoModels;
+using API.Models.DatabaseModels;
 
 namespace API.Controllers
 {
