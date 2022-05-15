@@ -9,7 +9,6 @@ namespace API.Models.DatabaseModels
         public string Name { get; set; }
         [JsonIgnore]
         public List<CourseClassroom> CourseClassrooms { get; set; }
-        [JsonIgnore]
         public ICollection<CourseEducationalProgram> CourseEducationalProgram { get; set; }
     }
 }

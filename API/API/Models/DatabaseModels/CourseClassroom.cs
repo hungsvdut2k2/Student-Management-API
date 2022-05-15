@@ -10,6 +10,6 @@ namespace API.Models.DatabaseModels
         public DateTime Schedule { get; set; }
         public Course Course { get; set; }
         public int CourseId { get; set; }
-        public List<UserInformation> UserInformation { get; set; }
+        public ICollection<CourseClassroomUserInformation> CourseClassroomUserInformation { get; set; }
     }
 }

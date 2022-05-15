@@ -21,7 +21,18 @@ namespace API.Data
                 .HasOne(bc => bc.EducationalProgram)
                 .WithMany(c => c.CourseEducationalProgram)
                 .HasForeignKey(bc => bc.CourseId);
+            modelBuilder.Entity<CourseClassroomUserInformation>()
+                .HasKey(bc => new { bc.CourseClassId, bc.UserInformationId });
+            modelBuilder.Entity<CourseClassroomUserInformation>()
+                .HasOne(bc => bc.CourseClassroom)
+                .WithMany(b => b.CourseClassroomUserInformation)
+                .HasForeignKey(bc => bc.CourseClassId);
+            modelBuilder.Entity<CourseClassroomUserInformation>()
+                .HasOne(bc => bc.UserInformation)
+                .WithMany(c => c.CourseClassroomUserInformation)
+                .HasForeignKey(bc => bc.UserInformationId);
         }
+        
         public DbSet<User> Users { get; set; }
         public DbSet<UserInformation> UsersInformation { get; set; }
         public DbSet<Classroom> Classrooms { get; set; }
@@ -30,6 +41,6 @@ namespace API.Data
         public DbSet<Faculty> Faculty{ get; set; }
         public DbSet<CourseClassroom> CoursesClassroom { get; set; }
         public DbSet<CourseEducationalProgram> CourseEducationalPrograms { get; set; }
-
+        public DbSet<CourseClassroomUserInformation> CourseClassroomUserInformations { get; set; }
     }
 }

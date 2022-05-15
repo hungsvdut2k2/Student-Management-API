@@ -19,6 +19,6 @@ namespace API.Models.DatabaseModels
         [JsonIgnore]
         public int ClassroomId { get; set; }
         [JsonIgnore]
-        public List<CourseClassroom> CourseClassrooms { get; set; }
+        public ICollection<CourseClassroomUserInformation> CourseClassroomUserInformation { get; set; }
     }
 }

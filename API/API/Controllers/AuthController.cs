@@ -38,7 +38,7 @@ namespace API.Controllers
                 Email = string.Empty,
                 Gender = true,
                 Classroom = classroom,
-                CourseClassrooms = null
+                CourseClassroomUserInformation = null
             };
             _context.UsersInformation.Add(userInformation);
             await _context.SaveChangesAsync();
@@ -112,7 +112,7 @@ namespace API.Controllers
             return jwt;
         }
         [HttpPut("ResetPassword")]
-        public async Task<ActionResult<User>> ResetPassword(ResetPasswordDto request)
+        public async Task<ActionResult<User>> ResetPassword(ResetPassowordDto request)
         {
             User user = await _context.Users.Where(w => w.Username == request.Username).FirstAsync();
             if(user == null)
@@ -129,6 +129,15 @@ namespace API.Controllers
             user.PasswordSalt = passwordSalt;
             await _context.SaveChangesAsync();
             return Ok(user);
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult<User>> Delete(int UserId)
+        {
+            User user = await _context.Users.FindAsync(UserId);
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

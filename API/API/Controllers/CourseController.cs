@@ -36,5 +36,14 @@ namespace API.Controllers
             }
             return Ok(resCoursesList);
         }
+
+        [HttpDelete]
+        public async Task<ActionResult<Course>> Delete(int CourseId)
+        {
+            var course = await _context.Courses.FindAsync(CourseId);
+            _context.Courses.Remove(course);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
