@@ -16,7 +16,8 @@ namespace API.Controllers
         {
             _context = context;
         }
-        [HttpGet()]
+
+        [HttpGet]
         public async Task<ActionResult<Course>> Get(int Id)
         {
             return await _context.Courses.FindAsync(Id);
@@ -34,6 +35,7 @@ namespace API.Controllers
                 Course findingCourse = await _context.Courses.FindAsync(course.CourseId);
                 resCoursesList.Add(findingCourse);
             }
+
             return Ok(resCoursesList);
         }
 
@@ -44,6 +46,15 @@ namespace API.Controllers
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
             return NoContent();
+        }
+
+        [HttpGet("GetAllCourseClass")]
+        public async Task<ActionResult<CourseClassroom>> GetAllCourseClass(int CourseId)
+        {
+            var classList = (from w in _context.CoursesClassroom
+                where w.CourseId == CourseId
+                select w).ToList();
+            return Ok(classList);
         }
     }
 }

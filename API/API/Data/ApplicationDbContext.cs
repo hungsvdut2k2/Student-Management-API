@@ -42,5 +42,6 @@ namespace API.Data
         public DbSet<CourseClassroom> CoursesClassroom { get; set; }
         public DbSet<CourseEducationalProgram> CourseEducationalPrograms { get; set; }
         public DbSet<CourseClassroomUserInformation> CourseClassroomUserInformations { get; set; }
+        public DbSet<Score> Score { get; set; }
     }
 }

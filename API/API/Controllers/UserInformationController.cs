@@ -92,5 +92,20 @@ namespace API.Controllers
                 select w).ToList();
             return Ok(studentList);
         }
+
+        [HttpGet("GetCourseClassroom")]
+        public async Task<ActionResult<List<CourseClassroom>>> GetAllCourseClassroom(string UserInformationId)
+        {
+            var classList = (from w in _context.CourseClassroomUserInformations
+                where w.UserInformationId == UserInformationId
+                select w).ToList();
+            var resCourseClassList = new List<CourseClassroom>();
+            foreach (var courseClassroom in classList)
+            {
+                CourseClassroom findingClass = await _context.CoursesClassroom.FindAsync(courseClassroom.CourseClassId);
+                resCourseClassList.Add(findingClass);
+            }
+            return Ok(resCourseClassList);
+        }
     }
 }

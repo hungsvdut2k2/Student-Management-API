@@ -49,5 +49,20 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpPost]
+        public async Task<ActionResult<CourseClassroomUserInformation>> Create(string UserInformationId, int CourseId)
+        {
+            CourseClassroomUserInformation courseUserInformation = new CourseClassroomUserInformation
+            {
+                UserInformationId = UserInformationId,
+                UserInformation = null,
+                CourseClassId = CourseId,
+                CourseClassroom = null
+            };
+            _context.CourseClassroomUserInformations.Add(courseUserInformation);
+            await _context.SaveChangesAsync();
+            return Ok(courseUserInformation);
+        }
     }
 }
