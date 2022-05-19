@@ -24,7 +24,7 @@ namespace API.Controllers
             _context = context;
             _configuration = configuration;
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("Register")]
         public async Task<ActionResult<User>> Register(RegisterDto request)
         {
@@ -101,8 +101,9 @@ namespace API.Controllers
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(JwtRegisteredClaimNames.Name, user.Username),
+                new Claim("role",user.Role),
+                new Claim(JwtRegisteredClaimNames.NameId, user.UserInformationId)
             };
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
