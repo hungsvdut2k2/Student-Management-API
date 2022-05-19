@@ -15,7 +15,8 @@ namespace API.Controllers
         {
             _context = context;
         }
-        [HttpGet("GetStudents")]
+        [Route("GetStudents/{ClassId}")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<UserInformation>>> GetAllStudentsInClass(int ClassId)
         {
             var CourseList = (from w in _context.CourseClassroomUserInformations
@@ -29,7 +30,8 @@ namespace API.Controllers
             }
             return Ok(resUserList);
         }
-        [HttpGet("GetClasses")]
+        [Route("GetClasses/{CourseId}")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<CourseClassroom>>> GetClasses(int CourseId)
         {
             var courseClassList = (from w in _context.CoursesClassroom
@@ -37,6 +39,7 @@ namespace API.Controllers
                 select w).ToList();
             return Ok(courseClassList);
         }
+        [Route("Delete/{Id}")]
         [HttpDelete]
         public async Task<ActionResult<CourseClassroom>> Delete(int Id)
         {
@@ -49,17 +52,31 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-
+        [Route("Create/{UserInformationId}/{CourseClassId}")]
         [HttpPost]
-        public async Task<ActionResult<CourseClassroomUserInformation>> Create(string UserInformationId, int CourseId)
+        public async Task<ActionResult<CourseClassroomUserInformation>> Create(string UserInformationId, int CourseClassId)
         {
             CourseClassroomUserInformation courseUserInformation = new CourseClassroomUserInformation
             {
                 UserInformationId = UserInformationId,
                 UserInformation = null,
-                CourseClassId = CourseId,
+                CourseClassId = CourseClassId,
                 CourseClassroom = null
             };
+            Score score = new Score
+            {
+                UserInformation = null,
+                UserInformationId = UserInformationId,
+                CourseClassroom = null,
+                CourseClassroomId = CourseClassId,
+                excerciseRate = 0.2,
+                midTermRate = 0.3,
+                finalTermRate = 0.5,
+                excerciseScore = 0,
+                midTermScore = 0,
+                finalTermScore = 0
+            };
+            _context.Score.Add(score);
             _context.CourseClassroomUserInformations.Add(courseUserInformation);
             await _context.SaveChangesAsync();
             return Ok(courseUserInformation);

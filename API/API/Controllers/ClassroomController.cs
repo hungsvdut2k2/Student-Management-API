@@ -20,13 +20,15 @@ namespace API.Controllers
         {
             return _context.Classrooms.ToList();
         }
-        [HttpGet("GetClassroomById")]
+        [Route("GetClassroomById/{Id}")]
+        [HttpGet]
         public async Task<ActionResult<Classroom>> GetClassroomById(int Id)
         {
             Classroom classroom = _context.Classrooms.Where(w => w.Id == Id).FirstOrDefault();
             return Ok(classroom);
         }
-        [HttpGet("GetClassroomsByFacultyId")]
+        [Route("GetClassroomsByFacultyId/{Id}")]
+        [HttpGet]
         public async Task<ActionResult<List<Classroom>>> GetClassroomByFacultyId(int Id)
         {
             var ClassList = (from w in _context.Classrooms
@@ -51,7 +53,8 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return await GetClassroomById(newClassroom.Id);
         }
-        [HttpDelete("DeleteClassroom")]
+        [Route("Delete/{Id}")]
+        [HttpDelete]
         public async Task<ActionResult<Classroom>> Delete(int Id)
         {
             var deletedClassroom =  _context.Classrooms.Where(w => w.Id == Id).FirstOrDefault();

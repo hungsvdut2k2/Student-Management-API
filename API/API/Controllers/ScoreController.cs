@@ -17,7 +17,8 @@ namespace API.Controllers
         {
             _context = context;
         }
-        [HttpGet("GetClassScore")]
+        [Route("GetClassScore/{CourseClassId}")]
+        [HttpGet]
         public async Task<ActionResult<List<ReturnedScore>>> GetScoreByClass(int CourseClassId)
         {
             List<Score> scoreList = (from w in _context.Score
@@ -44,8 +45,8 @@ namespace API.Controllers
 
             return Ok(returnedScore);
         }
-
-        [HttpGet("GetAllScoreOfStudent")]
+        [Route("GetAllScoreOfStudent/{UserInformationId}")]
+        [HttpGet]
         public async Task<ActionResult<List<ReturnedScoreOfStudent>>> GetAllScore(string UserInformationId)
         {
             var scoreList = (from w in _context.Score
@@ -71,7 +72,7 @@ namespace API.Controllers
 
             return Ok(returnedScore);
         }
-
+        [Route("Put/{userInformationId}/{CourseClassId}")]
         [HttpPut]
         public async Task<ActionResult<List<ReturnedScore>>> Update(string userInformationId, int CourseClassId, UpdateScoreDto request)
         {

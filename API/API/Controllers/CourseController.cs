@@ -16,14 +16,14 @@ namespace API.Controllers
         {
             _context = context;
         }
-
+        [Route("Get/{Id}")]
         [HttpGet]
         public async Task<ActionResult<Course>> Get(int Id)
         {
             return await _context.Courses.FindAsync(Id);
         }
-
-        [HttpGet("GetCourseByEducationProgramId")]
+        [Route("GetCourseByEducationProgramId/{EducationalProgramId}")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Course>>> GetByEducationalProgram(int EducationalProgramId)
         {
             var CourseList = (from w in _context.CourseEducationalPrograms
@@ -38,7 +38,7 @@ namespace API.Controllers
 
             return Ok(resCoursesList);
         }
-
+        [Route("Delete/{Id}")]
         [HttpDelete]
         public async Task<ActionResult<Course>> Delete(int CourseId)
         {
@@ -47,8 +47,8 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-
-        [HttpGet("GetAllCourseClass")]
+        [Route("GetAllCourseClass/{CourseId}")]
+        [HttpGet]
         public async Task<ActionResult<CourseClassroom>> GetAllCourseClass(int CourseId)
         {
             var classList = (from w in _context.CoursesClassroom

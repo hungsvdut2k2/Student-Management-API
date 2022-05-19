@@ -17,8 +17,8 @@ namespace API.Controllers
         {
             _context = context;
         }
-
-        [HttpGet("Get")]
+        [Route("Get/{Id}")]
+        [HttpGet]
         public async Task<ActionResult<UserInformation>> Get(string Id)
         {
             UserInformation userInformation = await _context.UsersInformation.FindAsync(Id);
@@ -33,7 +33,7 @@ namespace API.Controllers
             return Ok(returnedInformation);
         }
 
-        [HttpPut("Put")]
+        [HttpPut]
         public async Task<ActionResult<UserInformation>> Put(InformationDto request)
         {
             UserInformation newUserInformation =  await _context.UsersInformation.FindAsync(request.UserId);
@@ -45,8 +45,8 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return await Get(newUserInformation.UserId);
         }
-
-        [HttpPost("Post")]
+        [Route("Post/{ClassId}")]
+        [HttpPost]
         public async Task<ActionResult<UserInformation>> Post(InformationDto request, int ClassId)
         {
             Classroom classroom = await _context.Classrooms.FindAsync(ClassId);
@@ -69,8 +69,8 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return Ok(newUserInformation);
         }
-
-        [HttpDelete("Delete")]
+        [Route("Delete/{Id}")]
+        [HttpDelete]
         public async Task<ActionResult<UserInformation>> Delete(string Id)
         {
             UserInformation userInformation = await _context.UsersInformation.FindAsync(Id);
@@ -83,8 +83,8 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-
-        [HttpGet("GetAllStudentsInClass")]
+        [Route("GetAllStudentsInClass/{ClassroomId}")]
+        [HttpGet]
         public async Task<ActionResult<List<UserInformation>>> GetAllStudentInClass(int ClassroomId)
         {
             var studentList = (from w in _context.UsersInformation
@@ -92,8 +92,8 @@ namespace API.Controllers
                 select w).ToList();
             return Ok(studentList);
         }
-
-        [HttpGet("GetCourseClassroom")]
+        [Route("GetCourseClassroom/{UserInformationId}")]
+        [HttpGet]
         public async Task<ActionResult<List<CourseClassroom>>> GetAllCourseClassroom(string UserInformationId)
         {
             var classList = (from w in _context.CourseClassroomUserInformations

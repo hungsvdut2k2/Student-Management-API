@@ -64,7 +64,9 @@ namespace API.Controllers
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
-        [HttpGet("GetAccountById")]
+
+        [Route("GetAccountById/{id}")]
+        [HttpGet]
         public async Task<ActionResult<User>> Get(int id)
         {
             var user = await _context.Users.FindAsync(id);
@@ -100,7 +102,7 @@ namespace API.Controllers
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, "Admin")
+                new Claim(ClaimTypes.Role, user.Role)
             };
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
@@ -130,7 +132,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return Ok(user);
         }
-
+        [Route("Delete/{UserId}")]
         [HttpDelete]
         public async Task<ActionResult<User>> Delete(int UserId)
         {
