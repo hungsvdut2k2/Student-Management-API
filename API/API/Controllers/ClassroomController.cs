@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using API.Data;
 using API.Models.DtoModels;
 using API.Models.DatabaseModels;
+using Microsoft.AspNetCore.Cors;
 
 namespace API.Controllers
 {
+    [EnableCors("Cau Khong")]
     [Route("api/[controller]")]
     [ApiController]
     public class ClassroomController : ControllerBase

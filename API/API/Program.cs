@@ -29,6 +29,14 @@ builder.Services.AddSwaggerGen(options =>
 
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "Cau Khong",
+        builder =>
+        {
+            builder.WithOrigins("*");
+        });
+});
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -49,6 +57,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("Cau Khong");
 
 app.UseHttpsRedirection();
 

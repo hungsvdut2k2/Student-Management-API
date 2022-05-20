@@ -5,6 +5,7 @@ using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers
 {
+    [EnableCors("Cau Khong")]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -24,7 +26,6 @@ namespace API.Controllers
             _context = context;
             _configuration = configuration;
         }
-        [Authorize(Roles = "Admin")]
         [HttpPost("Register")]
         public async Task<ActionResult<User>> Register(RegisterDto request)
         {
@@ -71,7 +72,7 @@ namespace API.Controllers
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
-                return NotFound();
+                return BadRequest("Not Found");
             return Ok(user);
         }
         [HttpPost("Login")]
