@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
-    [Route("api/[controller]")]
+    [Route("api/course-class-management")]
     [ApiController]
     public class CourseClassroomController : ControllerBase
     {
@@ -17,7 +17,7 @@ namespace API.Controllers
         {
             _context = context;
         }
-        [Route("GetStudents/{ClassId}")]
+        [Route("students/{classId}")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserInformation>>> GetAllStudentsInClass(int ClassId)
         {
@@ -32,7 +32,7 @@ namespace API.Controllers
             }
             return Ok(resUserList);
         }
-        [Route("GetClasses/{CourseId}")]
+        [Route("classes/{courseId}")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CourseClassroom>>> GetClasses(int CourseId)
         {
@@ -41,7 +41,7 @@ namespace API.Controllers
                 select w).ToList();
             return Ok(courseClassList);
         }
-        [Route("Delete/{Id}")]
+        [Route("{Id}")]
         [HttpDelete]
         public async Task<ActionResult<CourseClassroom>> Delete(int Id)
         {
@@ -54,7 +54,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-        [Route("Create/{UserInformationId}/{CourseClassId}")]
+        [Route("{UserInformationId}/{CourseClassId}")]
         [HttpPost]
         public async Task<ActionResult<CourseClassroomUserInformation>> Create(string UserInformationId, int CourseClassId)
         {

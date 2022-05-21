@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
-    [Route("api/[controller]")]
+    [Route("api/score-management")]
     [ApiController]
     public class ScoreController : ControllerBase
     {   
@@ -19,7 +19,7 @@ namespace API.Controllers
         {
             _context = context;
         }
-        [Route("GetClassScore/{CourseClassId}")]
+        [Route("class/{CourseClassId}")]
         [HttpGet]
         public async Task<ActionResult<List<ReturnedScore>>> GetScoreByClass(int CourseClassId)
         {
@@ -47,7 +47,7 @@ namespace API.Controllers
 
             return Ok(returnedScore);
         }
-        [Route("GetAllScoreOfStudent/{UserInformationId}")]
+        [Route("student/{UserInformationId}")]
         [HttpGet]
         public async Task<ActionResult<List<ReturnedScoreOfStudent>>> GetAllScore(string UserInformationId)
         {
@@ -74,7 +74,7 @@ namespace API.Controllers
 
             return Ok(returnedScore);
         }
-        [Route("Put/{userInformationId}/{CourseClassId}")]
+        [Route("{userInformationId}/{CourseClassId}")]
         [HttpPut]
         public async Task<ActionResult<List<ReturnedScore>>> Update(string userInformationId, int CourseClassId, UpdateScoreDto request)
         {

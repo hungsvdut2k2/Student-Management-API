@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Cors;
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
-    [Route("api/[controller]")]
+    [Route("api/classroom-management")]
     [ApiController]
     public class ClassroomController : ControllerBase
     {
@@ -17,19 +17,19 @@ namespace API.Controllers
         {
             _context = context;
         }
-        [HttpGet("GetAllClass")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Classroom>>> Get()
         {
             return _context.Classrooms.ToList();
         }
-        [Route("GetClassroomById/{Id}")]
+        [Route("managed-classroom/{Id}")]
         [HttpGet]
         public async Task<ActionResult<Classroom>> GetClassroomById(int Id)
         {
             Classroom classroom = _context.Classrooms.Where(w => w.Id == Id).FirstOrDefault();
             return Ok(classroom);
         }
-        [Route("GetClassroomsByFacultyId/{Id}")]
+        [Route("managed-classroom/faculty/{Id}")]
         [HttpGet]
         public async Task<ActionResult<List<Classroom>>> GetClassroomByFacultyId(int Id)
         {
@@ -38,7 +38,7 @@ namespace API.Controllers
                                    select w).ToList();
             return Ok(ClassList);
         }
-        [HttpPost("CreateClassrom")]
+        [HttpPost]
         public async Task<ActionResult<Classroom>> Post(CreateClassroomDto request)
         {
             Faculty faculty = _context.Faculty.Where(w => w.Id == request.FacultyId).FirstOrDefault();
@@ -55,7 +55,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return await GetClassroomById(newClassroom.Id);
         }
-        [Route("Delete/{Id}")]
+        [Route("{Id}")]
         [HttpDelete]
         public async Task<ActionResult<Classroom>> Delete(int Id)
         {

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
-    [Route("api/[controller]")]
+    [Route("api/user-management")]
     [ApiController]
     public class UserInformationController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace API.Controllers
         {
             _context = context;
         }
-        [Route("Get/{Id}")]
+        [Route("{Id}")]
         [HttpGet]
         public async Task<ActionResult<UserInformation>> Get(string Id)
         {
@@ -47,7 +47,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return await Get(newUserInformation.UserId);
         }
-        [Route("Post/{ClassId}")]
+        [Route("{ClassId}")]
         [HttpPost]
         public async Task<ActionResult<UserInformation>> Post(InformationDto request, int ClassId)
         {
@@ -71,7 +71,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return Ok(newUserInformation);
         }
-        [Route("Delete/{Id}")]
+        [Route("{Id}")]
         [HttpDelete]
         public async Task<ActionResult<UserInformation>> Delete(string Id)
         {
@@ -85,7 +85,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-        [Route("GetAllStudentsInClass/{ClassroomId}")]
+        [Route("class/{ClassroomId}")]
         [HttpGet]
         public async Task<ActionResult<List<UserInformation>>> GetAllStudentInClass(int ClassroomId)
         {
@@ -94,7 +94,7 @@ namespace API.Controllers
                 select w).ToList();
             return Ok(studentList);
         }
-        [Route("GetCourseClassroom/{UserInformationId}")]
+        [Route("course-class/{UserInformationId}")]
         [HttpGet]
         public async Task<ActionResult<List<CourseClassroom>>> GetAllCourseClassroom(string UserInformationId)
         {

@@ -34,7 +34,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "Cau Khong",
         builder =>
         {
-            builder.WithOrigins("*");
+            builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
         });
 });
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>

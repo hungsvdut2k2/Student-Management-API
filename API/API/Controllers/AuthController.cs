@@ -14,7 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
-    [Route("api/[controller]")]
+    [Route("api/account-management")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace API.Controllers
             _context = context;
             _configuration = configuration;
         }
-        [HttpPost("Register")]
+        [HttpPost("register")]
         public async Task<ActionResult<User>> Register(RegisterDto request)
         {
             Classroom classroom = await _context.Classrooms.FindAsync(request.ClassroomId);
@@ -66,7 +66,7 @@ namespace API.Controllers
             }
         }
 
-        [Route("GetAccountById/{id}")]
+        [Route("{id}")]
         [HttpGet]
         public async Task<ActionResult<User>> Get(int id)
         {
@@ -75,7 +75,7 @@ namespace API.Controllers
                 return BadRequest("Not Found");
             return Ok(user);
         }
-        [HttpPost("Login")]
+        [HttpPost("login")]
         public async Task<ActionResult<string>> Login(LoginDto request)
         {
             User user = await _context.Users.Where(w => w.Username == request.Username).FirstAsync();
@@ -115,7 +115,7 @@ namespace API.Controllers
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
         }
-        [HttpPut("ResetPassword")]
+        [HttpPut("reset-password")]
         public async Task<ActionResult<User>> ResetPassword(ResetPassowordDto request)
         {
             User user = await _context.Users.Where(w => w.Username == request.Username).FirstAsync();
@@ -134,7 +134,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return Ok(user);
         }
-        [Route("Delete/{UserId}")]
+        [Route("{userId}")]
         [HttpDelete]
         public async Task<ActionResult<User>> Delete(int UserId)
         {

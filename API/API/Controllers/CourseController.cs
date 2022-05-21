@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
-    [Route("api/[controller]")]
+    [Route("api/course-management")]
     [ApiController]
     public class CourseController : ControllerBase
     {
@@ -18,13 +18,13 @@ namespace API.Controllers
         {
             _context = context;
         }
-        [Route("Get/{Id}")]
+        [Route("{Id}")]
         [HttpGet]
         public async Task<ActionResult<Course>> Get(int Id)
         {
             return await _context.Courses.FindAsync(Id);
         }
-        [Route("GetCourseByEducationProgramId/{EducationalProgramId}")]
+        [Route("educational-program/{educationalProgramId}")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Course>>> GetByEducationalProgram(int EducationalProgramId)
         {
@@ -40,7 +40,7 @@ namespace API.Controllers
 
             return Ok(resCoursesList);
         }
-        [Route("Delete/{Id}")]
+        [Route("{Id}")]
         [HttpDelete]
         public async Task<ActionResult<Course>> Delete(int CourseId)
         {
@@ -49,7 +49,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-        [Route("GetAllCourseClass/{CourseId}")]
+        [Route("classes/{courseId}")]
         [HttpGet]
         public async Task<ActionResult<CourseClassroom>> GetAllCourseClass(int CourseId)
         {
