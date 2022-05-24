@@ -85,17 +85,10 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-        [Route("class/{classroomId}")]
-        [HttpGet]
-        public async Task<ActionResult<List<UserInformation>>> GetAllStudentInClass(int ClassroomId)
+        [HttpGet("class/{classroomId}")]
+        public async Task<ActionResult<List<UserInformation>>> GetAllStudentInClass(int classroomId)
         {
-            /*if (ClassroomId == 0)
-            {
-                return await GetAllStudentInFaculty(facultyId);
-            }*/
-            var studentList = (from w in _context.UsersInformation
-                where w.ClassroomId == ClassroomId
-                select w).ToList();
+            var studentList = _context.UsersInformation.Where(w => w.ClassroomId == classroomId).ToList();
             return Ok(studentList);
         }
         [Route("course-class/{UserInformationId}")]
