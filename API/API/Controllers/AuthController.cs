@@ -128,7 +128,7 @@ namespace API.Controllers
             {
                 return BadRequest("Uncertain Information");
             }
-            CreatePasswordHash(request.newPassword, out byte[] passwordHash, out byte[] passwordSalt);
+            CreatePasswordHash(request.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
             await _context.SaveChangesAsync();

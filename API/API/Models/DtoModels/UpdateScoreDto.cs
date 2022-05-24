@@ -2,8 +2,8 @@
 {
     public class UpdateScoreDto
     {
-        public double excerciseScore { get; set; }
-        public double midTermScore { get; set; }
-        public double finalTermScore { get; set; }
+        public double ExcerciseScore { get; set; }
+        public double MidTermScore { get; set; }
+        public double FinalTermScore { get; set; }
     }
 }

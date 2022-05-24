@@ -2,7 +2,7 @@
 {
     public class CreateClassroomDto
     {
-        public string nameOfClassroom { get; set; }
+        public string NameOfClassroom { get; set; }
         public int FacultyId { get; set; }
     }
 }

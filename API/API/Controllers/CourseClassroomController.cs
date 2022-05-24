@@ -71,12 +71,12 @@ namespace API.Controllers
                 UserInformationId = UserInformationId,
                 CourseClassroom = null,
                 CourseClassroomId = CourseClassId,
-                excerciseRate = 0.2,
-                midTermRate = 0.3,
-                finalTermRate = 0.5,
-                excerciseScore = 0,
-                midTermScore = 0,
-                finalTermScore = 0
+                ExcerciseRate = 0.2,
+                MidTermRate = 0.3,
+                FinalTermRate = 0.5,
+                ExcerciseScore = 0,
+                MidTermScore = 0,
+                FinalTermScore = 0
             };
             _context.Score.Add(score);
             _context.CourseClassroomUserInformations.Add(courseUserInformation);

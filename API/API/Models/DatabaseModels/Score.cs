@@ -13,16 +13,16 @@ namespace API.Models.DatabaseModels
         public CourseClassroom CourseClassroom { get; set; }
         [JsonIgnore]
         public int CourseClassroomId { get; set; }
-        public double excerciseScore { get; set; }
-        public double midTermScore { get; set; }
-        public double finalTermScore { get; set; }
-        public double excerciseRate { get; set; }
-        public double midTermRate { get; set; } 
-        
-        public double finalTermRate { get; set; }
-        public double calScore()
+        public double ExcerciseScore { get; set; }
+        public double MidTermScore { get; set; }
+        public double FinalTermScore { get; set; }
+        public double ExcerciseRate { get; set; }
+        public double MidTermRate { get; set; }
+
+        public double FinalTermRate { get; set; }
+        public double CalScore()
         {
-            return excerciseRate * excerciseScore + midTermRate * midTermScore + finalTermRate * finalTermScore;
+            return ExcerciseRate * ExcerciseScore + MidTermRate * MidTermScore + FinalTermRate * FinalTermScore;
         }
     }
 }

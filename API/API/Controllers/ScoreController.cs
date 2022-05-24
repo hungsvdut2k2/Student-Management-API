@@ -29,7 +29,7 @@ namespace API.Controllers
             List<double> totalScoreList = new List<double>();
             foreach (var score in scoreList)
             {
-                totalScoreList.Add(score.calScore());
+                totalScoreList.Add(score.CalScore());
             }
 
             List<ReturnedScore> returnedScore = new List<ReturnedScore>();
@@ -38,9 +38,9 @@ namespace API.Controllers
                 UserInformation userInformation = await _context.UsersInformation.FindAsync(scoreList[i].UserInformationId);
                 ReturnedScore temp = new ReturnedScore
                 {
-                    information = userInformation.Name,
-                    score = scoreList[i],
-                    totalScore = scoreList[i].calScore()
+                    Information = userInformation.Name,
+                    Score = scoreList[i],
+                    TotalScore = scoreList[i].CalScore()
                 };
                 returnedScore.Add(temp);
             }
@@ -57,7 +57,7 @@ namespace API.Controllers
             List<double> totalScoreList = new List<double>();
             foreach (var score in scoreList)
             {
-                totalScoreList.Add(score.calScore());
+                totalScoreList.Add(score.CalScore());
             }
             List<ReturnedScoreOfStudent> returnedScore = new List<ReturnedScoreOfStudent>();
             for (int i = 0; i < scoreList.Count; i++)
@@ -66,8 +66,8 @@ namespace API.Controllers
                 ReturnedScoreOfStudent temp = new ReturnedScoreOfStudent
                 {
                      CourseClassroom = courseClassroom,
-                     score = scoreList[i],
-                     totalScore = scoreList[i].calScore()
+                     Score = scoreList[i],
+                     TotalScore = scoreList[i].CalScore()
                 };
                 returnedScore.Add(temp);
             }
@@ -81,9 +81,9 @@ namespace API.Controllers
             Score findingScore = await _context.Score
                 .Where(w => w.UserInformationId == userInformationId && w.CourseClassroomId == CourseClassId)
                 .FirstAsync();
-            findingScore.excerciseScore = request.excerciseScore;
-            findingScore.midTermScore = request.midTermScore;
-            findingScore.finalTermScore = request.finalTermScore;
+            findingScore.ExcerciseScore = request.ExcerciseScore;
+            findingScore.MidTermScore = request.MidTermScore;
+            findingScore.FinalTermScore = request.FinalTermScore;
             await _context.SaveChangesAsync();
             return await GetScoreByClass(CourseClassId);
         }

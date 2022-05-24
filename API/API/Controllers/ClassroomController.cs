@@ -48,7 +48,7 @@ namespace API.Controllers
             }
             Classroom newClassroom = new Classroom
             {
-                Name = request.nameOfClassroom,
+                Name = request.NameOfClassroom,
                 Faculty = faculty
             };
             _context.Classrooms.Add(newClassroom);
