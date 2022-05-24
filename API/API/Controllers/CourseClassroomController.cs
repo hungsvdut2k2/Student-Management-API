@@ -58,18 +58,20 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<CourseClassroomUserInformation>> Create(string UserInformationId, int CourseClassId)
         {
+            UserInformation userInformation = await _context.UsersInformation.FindAsync(UserInformationId);
+            CourseClassroom courseClass = await _context.CoursesClassroom.FindAsync(CourseClassId); 
             CourseClassroomUserInformation courseUserInformation = new CourseClassroomUserInformation
             {
                 UserInformationId = UserInformationId,
-                UserInformation = null,
+                UserInformation = userInformation,
                 CourseClassId = CourseClassId,
-                CourseClassroom = null
+                CourseClassroom = courseClass
             };
             Score score = new Score
             {
-                UserInformation = null,
+                UserInformation = userInformation,
                 UserInformationId = UserInformationId,
-                CourseClassroom = null,
+                CourseClassroom = courseClass,
                 CourseClassroomId = CourseClassId,
                 ExcerciseRate = 0.2,
                 MidTermRate = 0.3,

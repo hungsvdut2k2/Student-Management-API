@@ -10,6 +10,7 @@ namespace API.Models.DatabaseModels
         public List<UserInformation> UserInformation { get; set; }
         [JsonIgnore]
         public Faculty Faculty { get; set; }
+        [JsonIgnore]
         public int FacultyId { get; set; }
     }
 }

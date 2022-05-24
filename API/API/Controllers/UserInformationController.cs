@@ -85,10 +85,14 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-        [Route("class/{ClassroomId}")]
+        [Route("class/{classroomId}")]
         [HttpGet]
         public async Task<ActionResult<List<UserInformation>>> GetAllStudentInClass(int ClassroomId)
         {
+            /*if (ClassroomId == 0)
+            {
+                return await GetAllStudentInFaculty(facultyId);
+            }*/
             var studentList = (from w in _context.UsersInformation
                 where w.ClassroomId == ClassroomId
                 select w).ToList();
@@ -108,6 +112,28 @@ namespace API.Controllers
                 resCourseClassList.Add(findingClass);
             }
             return Ok(resCourseClassList);
+        }
+        [Route("faculty/{facultyId}")]
+
+        [HttpGet]
+        public async Task<ActionResult<List<UserInformation>>> GetAllStudentInFaculty(int facultyId)
+        {
+            Faculty faculty = await _context.Faculty.FindAsync(facultyId);
+            List<Classroom> classList = _context.Classrooms.Where(w => w.FacultyId == faculty.Id).ToList();
+            List<UserInformation> studentList = new List<UserInformation>();
+            foreach (var Class in classList)
+            {
+                List<UserInformation> tempList =
+                    _context.UsersInformation.Where(w => w.ClassroomId == Class.Id).ToList();
+                studentList.AddRange(tempList);
+            }
+
+            return Ok(studentList);
+        }
+        [HttpGet]
+        public async Task<ActionResult<List<UserInformation>>> GetAllStudent()
+        {
+            return Ok(_context.UsersInformation.ToList());
         }
     }
 }

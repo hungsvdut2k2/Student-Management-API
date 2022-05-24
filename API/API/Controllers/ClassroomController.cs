@@ -22,14 +22,14 @@ namespace API.Controllers
         {
             return _context.Classrooms.ToList();
         }
-        [Route("management/{Id}")]
+        [Route("{Id}")]
         [HttpGet]
         public async Task<ActionResult<Classroom>> GetClassroomById(int Id)
         {
             Classroom classroom = _context.Classrooms.Where(w => w.Id == Id).FirstOrDefault();
             return Ok(classroom);
         }
-        [Route("management/faculty/{Id}")]
+        [Route("faculty/{Id}")]
         [HttpGet]
         public async Task<ActionResult<List<Classroom>>> GetClassroomByFacultyId(int Id)
         {
