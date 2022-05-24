@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
-    [Route("api/course-management")]
+    [Route("api/course")]
     [ApiController]
     public class CourseController : ControllerBase
     {

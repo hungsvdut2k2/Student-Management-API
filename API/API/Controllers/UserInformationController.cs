@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
-    [Route("api/user-management")]
+    [Route("api/user")]
     [ApiController]
     public class UserInformationController : ControllerBase
     {

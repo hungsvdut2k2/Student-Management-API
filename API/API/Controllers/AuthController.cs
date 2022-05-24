@@ -14,7 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
-    [Route("api/account-management")]
+    [Route("api/account")]
     [ApiController]
     public class AuthController : ControllerBase
     {

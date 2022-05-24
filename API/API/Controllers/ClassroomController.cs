@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Cors;
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
-    [Route("api/classroom-management")]
+    [Route("api/classroom")]
     [ApiController]
     public class ClassroomController : ControllerBase
     {
@@ -22,14 +22,14 @@ namespace API.Controllers
         {
             return _context.Classrooms.ToList();
         }
-        [Route("managed-classroom/{Id}")]
+        [Route("management/{Id}")]
         [HttpGet]
         public async Task<ActionResult<Classroom>> GetClassroomById(int Id)
         {
             Classroom classroom = _context.Classrooms.Where(w => w.Id == Id).FirstOrDefault();
             return Ok(classroom);
         }
-        [Route("managed-classroom/faculty/{Id}")]
+        [Route("management/faculty/{Id}")]
         [HttpGet]
         public async Task<ActionResult<List<Classroom>>> GetClassroomByFacultyId(int Id)
         {

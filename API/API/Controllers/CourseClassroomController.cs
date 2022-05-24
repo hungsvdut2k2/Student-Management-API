@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
-    [Route("api/course-class-management")]
+    [Route("api/course-class")]
     [ApiController]
     public class CourseClassroomController : ControllerBase
     {
