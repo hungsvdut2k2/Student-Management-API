@@ -1,0 +1,16 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=PBL3;Trusted_Connection=True",
+    "Azure": "Data Source=<database server hostname>;Initial Catalog=PBL3;Persist Security Info=True;User ID=<username>;Password=<password>"
+  },
+  "AppSettings": {
+    "Token": "<JWT secret key>"
+  }
+}
