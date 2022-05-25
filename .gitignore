@@ -365,3 +365,5 @@ FodyWeavers.xsd
 Properties/PublishProfiles/
 Properties/ServiceDependencies/
 Properties/serviceDependencies*
+
+appsettings.json
