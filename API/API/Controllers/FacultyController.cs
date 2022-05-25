@@ -45,6 +45,13 @@ namespace API.Controllers
 
             return Ok(facultiesDto);
         }
+        [HttpPost]
+        public async Task<ActionResult<Faculty>> Create(Faculty faculty)
+        {
+            _context.Faculty.Add(faculty);
+            _context.SaveChanges();
+            return Ok(faculty);
+        }
     }
 }
 
