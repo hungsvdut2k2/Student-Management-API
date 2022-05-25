@@ -106,27 +106,46 @@ namespace API.Controllers
             }
             return Ok(resCourseClassList);
         }
-        [Route("faculty/{facultyId}")]
+       [Route("faculty/{facultyId}")]
 
         [HttpGet]
-        public async Task<ActionResult<List<UserInformation>>> GetAllStudentInFaculty(int facultyId)
+        public async Task<ActionResult<List<Classroom>>> GetAllStudentInFaculty(int facultyId)
         {
             Faculty faculty = await _context.Faculty.FindAsync(facultyId);
             List<Classroom> classList = _context.Classrooms.Where(w => w.FacultyId == faculty.Id).ToList();
-            List<UserInformation> studentList = new List<UserInformation>();
             foreach (var Class in classList)
             {
                 List<UserInformation> tempList =
                     _context.UsersInformation.Where(w => w.ClassroomId == Class.Id).ToList();
-                studentList.AddRange(tempList);
+                Class.Students = tempList;
             }
 
-            return Ok(studentList);
+            return Ok(classList);
         }
         [HttpGet]
-        public async Task<ActionResult<List<UserInformation>>> GetAllStudent()
+        public async Task<ActionResult<List<ReturnedFacultyDto>>> GetAllStudent()
         {
-            return Ok(_context.UsersInformation.ToList());
+            List<Faculty> faculties = _context.Faculty.ToList();
+            List<ReturnedFacultyDto> resList = new List<ReturnedFacultyDto>();
+            foreach (Faculty faculty in faculties)
+            {
+                List<Classroom> classList = _context.Classrooms.Where(w => w.FacultyId == faculty.Id).ToList();
+                foreach (Classroom Class in classList)
+                {
+                    List<UserInformation> studentList = _context.UsersInformation.Where(w => w.ClassroomId == Class.Id).ToList();
+                    Class.Students = studentList;
+                }
+
+                ReturnedFacultyDto tempDto = new ReturnedFacultyDto
+                {
+                    facultyId = faculty.Id,
+                    facultyName = faculty.Name,
+                    Classes = classList
+                };
+                resList.Add(tempDto);
+            }
+            return Ok(resList);
         }
     }
 }
+
