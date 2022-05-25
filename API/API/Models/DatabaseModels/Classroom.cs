@@ -7,7 +7,7 @@ namespace API.Models.DatabaseModels
         public int Id { get; set; }
         public string Name { get; set; }
         [JsonIgnore]
-        public List<UserInformation> UserInformation { get; set; }
+        public List<UserInformation> Students { get; set; }
         [JsonIgnore]
         public Faculty Faculty { get; set; }
         [JsonIgnore]
