@@ -123,10 +123,10 @@ namespace API.Controllers
             return Ok(classList);
         }
         [HttpGet]
-        public async Task<ActionResult<List<ReturnedFacultyDto>>> GetAllStudent()
+        public async Task<ActionResult<List<Classroom>>> GetAllStudent()
         {
             List<Faculty> faculties = _context.Faculty.ToList();
-            List<ReturnedFacultyDto> resList = new List<ReturnedFacultyDto>();
+            List<Classroom> resList = new List<Classroom>();
             foreach (Faculty faculty in faculties)
             {
                 List<Classroom> classList = _context.Classrooms.Where(w => w.FacultyId == faculty.Id).ToList();
@@ -134,15 +134,8 @@ namespace API.Controllers
                 {
                     List<UserInformation> studentList = _context.UsersInformation.Where(w => w.ClassroomId == Class.Id).ToList();
                     Class.Students = studentList;
+                    resList.Add(Class);
                 }
-
-                ReturnedFacultyDto tempDto = new ReturnedFacultyDto
-                {
-                    facultyId = faculty.Id,
-                    facultyName = faculty.Name,
-                    Classes = classList
-                };
-                resList.Add(tempDto);
             }
             return Ok(resList);
         }
