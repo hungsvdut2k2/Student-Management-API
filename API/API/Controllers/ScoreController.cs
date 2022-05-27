@@ -38,7 +38,7 @@ namespace API.Controllers
                 UserInformation userInformation = await _context.UsersInformation.FindAsync(scoreList[i].UserInformationId);
                 ReturnedScore temp = new ReturnedScore
                 {
-                    Information = userInformation.Name,
+                    Student = userInformation.Name,
                     Score = scoreList[i],
                     TotalScore = scoreList[i].CalScore()
                 };
