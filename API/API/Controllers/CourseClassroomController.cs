@@ -1,5 +1,6 @@
 ﻿using API.Data;
 using API.Models.DatabaseModels;
+using API.Models.DtoModels;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,10 +20,10 @@ namespace API.Controllers
         }
         [Route("students/{classId}")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserInformation>>> GetAllStudentsInClass(int ClassId)
+        public async Task<ActionResult<IEnumerable<UserInformation>>> GetAllStudentsInClass(int classId)
         {
             var CourseList = (from w in _context.CourseClassroomUserInformations
-                where w.CourseClassId == ClassId
+                where w.CourseClassId == classId
                 select w).ToList();
             List<UserInformation> resUserList = new List<UserInformation>();
             foreach (var course in CourseList)
@@ -32,12 +33,11 @@ namespace API.Controllers
             }
             return Ok(resUserList);
         }
-        [Route("classes/{courseId}")]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CourseClassroom>>> GetClasses(int CourseId)
+        [HttpGet("classes/{courseId}")]
+        public async Task<ActionResult<IEnumerable<CourseClassroom>>> GetClasses(int courseId)
         {
             var courseClassList = (from w in _context.CoursesClassroom
-                where w.CourseId == CourseId
+                where w.CourseId == courseId
                 select w).ToList();
             return Ok(courseClassList);
         }
@@ -54,7 +54,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-        [Route("{UserInformationId}/{CourseClassId}")]
+        [Route("student/{UserInformationId}/{CourseClassId}")]
         [HttpPost]
         public async Task<ActionResult<CourseClassroomUserInformation>> Create(string UserInformationId, int CourseClassId)
         {
@@ -84,6 +84,21 @@ namespace API.Controllers
             _context.CourseClassroomUserInformations.Add(courseUserInformation);
             await _context.SaveChangesAsync();
             return Ok(courseUserInformation);
+        }
+
+        [HttpPost("course")]
+        public async Task<ActionResult<List<CourseClassroom>>> AddCourseClassroom(CreateCourseClassroomDto request)
+        {
+            Course course = _context.Courses.Find(request.CourseId);
+            CourseClassroom courseClassroom = new CourseClassroom
+            {
+                TeacherName = request.TeacherName,
+                Course = course,
+                Schedule = request.Schedule
+            };
+            _context.CoursesClassroom.Add(courseClassroom);
+            _context.SaveChangesAsync();
+            return Ok(courseClassroom);
         }
     }
 }

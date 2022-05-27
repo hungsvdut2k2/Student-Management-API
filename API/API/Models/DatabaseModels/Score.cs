@@ -4,6 +4,7 @@ namespace API.Models.DatabaseModels
 {
     public class Score
     {
+        [JsonIgnore]
         public int Id { get; set; }
         [JsonIgnore]
         public UserInformation UserInformation { get; set; }

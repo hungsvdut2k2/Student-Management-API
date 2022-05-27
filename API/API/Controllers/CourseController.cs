@@ -26,10 +26,10 @@ namespace API.Controllers
         }
         [Route("educational-program/{educationalProgramId}")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Course>>> GetByEducationalProgram(int EducationalProgramId)
+        public async Task<ActionResult<IEnumerable<Course>>> GetByEducationalProgram(int educationalProgramId)
         {
             var CourseList = (from w in _context.CourseEducationalPrograms
-                where w.EducationalProgramId == EducationalProgramId
+                where w.EducationalProgramId == educationalProgramId
                 select w).ToList();
             List<Course> resCoursesList = new List<Course>();
             foreach (var course in CourseList)
@@ -40,21 +40,21 @@ namespace API.Controllers
 
             return Ok(resCoursesList);
         }
-        [Route("{Id}")]
+        [Route("{courseId}")]
         [HttpDelete]
-        public async Task<ActionResult<Course>> Delete(int CourseId)
+        public async Task<ActionResult<Course>> Delete(int courseId)
         {
-            var course = await _context.Courses.FindAsync(CourseId);
+            var course = await _context.Courses.FindAsync(courseId);
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
             return NoContent();
         }
         [Route("classes/{courseId}")]
         [HttpGet]
-        public async Task<ActionResult<CourseClassroom>> GetAllCourseClass(int CourseId)
+        public async Task<ActionResult<CourseClassroom>> GetAllCourseClass(int courseId)
         {
             var classList = (from w in _context.CoursesClassroom
-                where w.CourseId == CourseId
+                where w.CourseId == courseId
                 select w).ToList();
             return Ok(classList);
         }

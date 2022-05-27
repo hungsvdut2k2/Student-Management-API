@@ -4,7 +4,7 @@ namespace API.Models.DtoModels
 {
     public class ReturnedScore
     {
-        public string Information { get; set; }
+        public string Student { get; set; }
         public Score Score { get; set; }
         public double TotalScore { get; set; }
     }
