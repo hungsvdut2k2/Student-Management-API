@@ -1,4 +1,7 @@
-﻿namespace API.Models.DtoModels
+﻿using API.Controllers;
+using Microsoft.AspNetCore.Mvc;
+
+namespace API.Models.DtoModels
 {
     public class InformationDto
     {

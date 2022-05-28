@@ -1,8 +1,11 @@
-﻿namespace API.Models.DatabaseModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace API.Models.DatabaseModels
 {
     public class Faculty
     {
-        public int Id { get; set; }
+        [Key]
+        public string FacultyId { get; set; }
         public string Name { get; set; }
         List<Classroom> Classrooms { get; set; }
     }

@@ -56,6 +56,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseCors("Cau Khong");
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 

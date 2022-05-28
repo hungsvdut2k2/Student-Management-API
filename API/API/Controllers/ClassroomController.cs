@@ -24,14 +24,14 @@ namespace API.Controllers
         }
         [Route("{Id}")]
         [HttpGet]
-        public async Task<ActionResult<Classroom>> GetClassroomById(int Id)
+        public async Task<ActionResult<Classroom>> GetClassroomById(string Id)
         {
-            Classroom classroom = _context.Classrooms.Where(w => w.Id == Id).FirstOrDefault();
+            Classroom classroom = _context.Classrooms.Where(w => w.ClassroomId == Id).FirstOrDefault();
             return Ok(classroom);
         }
         [Route("faculty/{Id}")]
         [HttpGet]
-        public async Task<ActionResult<List<Classroom>>> GetClassroomByFacultyId(int Id)
+        public async Task<ActionResult<List<Classroom>>> GetClassroomByFacultyId(string Id)
         {
             var ClassList = (from w in _context.Classrooms
                                    where w.FacultyId == Id
@@ -41,25 +41,38 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<Classroom>> Post(CreateClassroomDto request)
         {
-            Faculty faculty = _context.Faculty.Where(w => w.Id == request.FacultyId).FirstOrDefault();
+            Faculty faculty = _context.Faculty.Where(w => w.FacultyId == request.FacultyId).FirstOrDefault();
+            int AcademicYear = Convert.ToInt32(request.NameOfClassroom.Substring(0, 2));
+            int numberOfClasses = (_context.Classrooms.Where(w => w.AcademicYear == AcademicYear).ToList()).Count() + 1;
+            string classId;
+            if (numberOfClasses < 10)
+            {
+                classId = "0" + Convert.ToString(numberOfClasses);
+            }
+            else
+            {
+                classId = Convert.ToString(numberOfClasses);
+            }
             if (faculty == null)
             {
                 return NotFound();
             }
             Classroom newClassroom = new Classroom
             {
+                ClassroomId = faculty.FacultyId + Convert.ToString(AcademicYear) + classId,
                 Name = request.NameOfClassroom,
-                Faculty = faculty
+                Faculty = faculty,
+                AcademicYear = AcademicYear
             };
             _context.Classrooms.Add(newClassroom);
             await _context.SaveChangesAsync();
-            return await GetClassroomById(newClassroom.Id);
+            return await GetClassroomById(newClassroom.ClassroomId);
         }
         [Route("{Id}")]
         [HttpDelete]
-        public async Task<ActionResult<Classroom>> Delete(int Id)
+        public async Task<ActionResult<Classroom>> Delete(string Id)
         {
-            var deletedClassroom =  _context.Classrooms.Where(w => w.Id == Id).FirstOrDefault();
+            var deletedClassroom =  _context.Classrooms.Where(w => w.ClassroomId == Id).FirstOrDefault();
             if(deletedClassroom == null)
             {
                 return NotFound();

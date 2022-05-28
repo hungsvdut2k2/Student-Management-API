@@ -12,12 +12,13 @@ namespace API.Models.DatabaseModels
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public bool Gender { get; set; }
+        public string ImageUrl { get; set; }
         [JsonIgnore]
         public User User { get; set; }
         [JsonIgnore]
         public Classroom Classroom { get; set; }
         [JsonIgnore]
-        public int ClassroomId { get; set; }
+        public string ClassroomId { get; set; }
         [JsonIgnore]
         public ICollection<CourseClassroomUserInformation> CourseClassroomUserInformation { get; set; }
     }

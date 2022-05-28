@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
@@ -27,36 +28,70 @@ namespace API.Controllers
             _configuration = configuration;
         }
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(RegisterDto request)
+        public async Task<ActionResult<LoginDto>> Register(RegisterDto request)
         {
             Classroom classroom = await _context.Classrooms.FindAsync(request.ClassroomId);
-            var userInformation = new UserInformation
+            int numberOfStudents = (_context.UsersInformation.Where(w => w.ClassroomId == classroom.ClassroomId).ToList()).Count + 1;
+            string studentId;
+            if (numberOfStudents < 10)
             {
-                UserId = request.UserInformationId,
-                Name = string.Empty,
+                studentId = "0" + Convert.ToString(numberOfStudents);
+            }
+            else
+            {
+                studentId = Convert.ToString(numberOfStudents);
+            }
+                var userInformation = new UserInformation
+            {
+                UserId = classroom.ClassroomId + studentId,
+                Name = request.Name,
                 Dob = DateTime.Now,
                 PhoneNumber = string.Empty,
                 Email = string.Empty,
-                Gender = true,
+                Gender = request.Gender,
+                ImageUrl = string.Empty,
                 Classroom = classroom,
                 CourseClassroomUserInformation = null
             };
+            string Password = randomPassword();
             _context.UsersInformation.Add(userInformation);
             await _context.SaveChangesAsync();
-            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            CreatePasswordHash(Convert.ToString(Password), out byte[] passwordHash, out byte[] passwordSalt);
             var user = new User
             {
-                Username = request.Username,
+                Username = classroom.ClassroomId + studentId,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 Role = request.Role,
                 UserInformation = userInformation
             };
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return await Get(user.Id);
+            _context.SaveChanges();
+            LoginDto res = new LoginDto
+            {
+                Username = user.Username,
+                Password = Password
+            };
+            return Ok(res);
         }
 
+        private string randomPassword()
+        {
+            StringBuilder str_build = new StringBuilder();
+            Random random = new Random();
+
+            char letter;
+
+            for (int i = 0; i < 10; i++)
+            {
+                double flt = random.NextDouble();
+                int shift = Convert.ToInt32(Math.Floor(25 * flt));
+                letter = Convert.ToChar(shift + 65);
+                str_build.Append(letter);
+            }
+
+            return str_build.ToString();
+        }
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())

@@ -33,10 +33,10 @@ namespace API.Controllers
             List<ReturnedFacultyDto> facultiesDto = new List<ReturnedFacultyDto>();
             foreach (var faculty in faculties)
             {
-                var classList = _context.Classrooms.Where(w => w.FacultyId == faculty.Id).ToList();
+                var classList = _context.Classrooms.Where(w => w.FacultyId == faculty.FacultyId).ToList();
                 ReturnedFacultyDto returnedFaculty = new ReturnedFacultyDto
                 {
-                    facultyId = faculty.Id,
+                    facultyId = faculty.FacultyId,
                     facultyName = faculty.Name,
                     Classes = classList
                 };

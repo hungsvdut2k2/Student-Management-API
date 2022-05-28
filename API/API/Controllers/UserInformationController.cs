@@ -1,10 +1,12 @@
-﻿using API.Data;
+﻿using System.ComponentModel.DataAnnotations;
+using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DataType = Swashbuckle.AspNetCore.SwaggerGen.DataType;
 
 namespace API.Controllers
 {
@@ -14,10 +16,12 @@ namespace API.Controllers
     public class UserInformationController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        public static IWebHostEnvironment _enviroment;
 
-        public UserInformationController(ApplicationDbContext context)
+        public UserInformationController(ApplicationDbContext context, IWebHostEnvironment enviroment)
         {
             _context = context;
+            _enviroment = enviroment;
         }
         [Route("{Id}")]
         [HttpGet]
@@ -86,7 +90,7 @@ namespace API.Controllers
             return NoContent();
         }
         [HttpGet("class/{classroomId}")]
-        public async Task<ActionResult<List<UserInformation>>> GetAllStudentInClass(int classroomId)
+        public async Task<ActionResult<List<UserInformation>>> GetAllStudentInClass(string classroomId)
         {
             var studentList = _context.UsersInformation.Where(w => w.ClassroomId == classroomId).ToList();
             return Ok(studentList);
@@ -109,14 +113,14 @@ namespace API.Controllers
        [Route("faculty/{facultyId}")]
 
         [HttpGet]
-        public async Task<ActionResult<List<Classroom>>> GetAllStudentInFaculty(int facultyId)
+        public async Task<ActionResult<List<Classroom>>> GetAllStudentInFaculty(string facultyId)
         {
             Faculty faculty = await _context.Faculty.FindAsync(facultyId);
-            List<Classroom> classList = _context.Classrooms.Where(w => w.FacultyId == faculty.Id).ToList();
+            List<Classroom> classList = _context.Classrooms.Where(w => w.FacultyId == faculty.FacultyId).ToList();
             foreach (var Class in classList)
             {
                 List<UserInformation> tempList =
-                    _context.UsersInformation.Where(w => w.ClassroomId == Class.Id).ToList();
+                    _context.UsersInformation.Where(w => w.ClassroomId == Class.ClassroomId).ToList();
                 Class.Students = tempList;
             }
 
@@ -129,15 +133,54 @@ namespace API.Controllers
             List<Classroom> resList = new List<Classroom>();
             foreach (Faculty faculty in faculties)
             {
-                List<Classroom> classList = _context.Classrooms.Where(w => w.FacultyId == faculty.Id).ToList();
+                List<Classroom> classList = _context.Classrooms.Where(w => w.FacultyId == faculty.FacultyId).ToList();
                 foreach (Classroom Class in classList)
                 {
-                    List<UserInformation> studentList = _context.UsersInformation.Where(w => w.ClassroomId == Class.Id).ToList();
+                    List<UserInformation> studentList = _context.UsersInformation.Where(w => w.ClassroomId == Class.ClassroomId).ToList();
                     Class.Students = studentList;
                     resList.Add(Class);
                 }
             }
             return Ok(resList);
+        }
+
+        public class FileUpLoadAPI
+        {
+            public IFormFile files { get; set; }
+        }
+        [HttpPost("image-upload/{userId}")]
+        public async Task<ActionResult<string>>UploadImage([FromForm] FileUpLoadAPI objFiles, string userId)
+        {
+            UserInformation userInformation = _context.UsersInformation.Find(userId);
+            try
+            {
+                if (objFiles.files.Length > 0)
+                {
+                    if (!Directory.Exists(_enviroment.WebRootPath + "\\Upload\\"))
+                    {
+                        Directory.CreateDirectory(_enviroment.WebRootPath + "\\Upload\\");
+                    }
+
+                    using (FileStream fileStream =
+                           System.IO.File.Create(_enviroment.WebRootPath + "\\Upload\\" + objFiles.files.FileName))
+                    {
+                        objFiles.files.CopyTo(fileStream);
+                        fileStream.Flush();
+                        userInformation.ImageUrl = "\\Upload\\" + objFiles.files.FileName;
+                        _context.SaveChanges();
+                        return Ok(userInformation);
+                    }
+                }
+                else
+                {
+                    return "failed";
+                }
+            }
+            catch (Exception e)
+            {
+
+                return e.Message.ToString();
+            }
         }
     }
 }
