@@ -31,9 +31,27 @@ namespace API.Controllers
         public async Task<ActionResult<LoginDto>> Register(RegisterDto request)
         {
             Classroom classroom = await _context.Classrooms.FindAsync(request.ClassroomId);
-            int numberOfStudents = (_context.UsersInformation.Where(w => w.ClassroomId == classroom.ClassroomId).ToList()).Count + 1;
+            Faculty faculty = await _context.Faculty.FindAsync(classroom.FacultyId);
+            List<Classroom> classInFaculty = _context.Classrooms.Where(w => w.FacultyId == faculty.FacultyId).ToList();
+            int numberOfStudents = configId(faculty.FacultyId);
+            foreach (var findingClassroom in classInFaculty)
+            {
+                if (findingClassroom == classroom)
+                    break;
+                numberOfStudents += (_context.UsersInformation.Where(w => w.ClassroomId == findingClassroom.ClassroomId)
+                    .ToList()).Count;
+            }
+            numberOfStudents += (_context.UsersInformation.Where(w => w.ClassroomId == classroom.ClassroomId).ToList()).Count + 1;
             string studentId;
             if (numberOfStudents < 10)
+            {
+                studentId = "000" + Convert.ToString(numberOfStudents);
+            }
+            else if (numberOfStudents > 10 && numberOfStudents < 100)
+            {
+                studentId = "00" + Convert.ToString(numberOfStudents);
+            }
+            else if (numberOfStudents > 100 && numberOfStudents < 1000)
             {
                 studentId = "0" + Convert.ToString(numberOfStudents);
             }
@@ -41,9 +59,9 @@ namespace API.Controllers
             {
                 studentId = Convert.ToString(numberOfStudents);
             }
-                var userInformation = new UserInformation
+            var userInformation = new UserInformation
             {
-                UserId = classroom.ClassroomId + studentId,
+                UserId = faculty.FacultyId + Convert.ToString(classroom.AcademicYear) + studentId,
                 Name = request.Name,
                 Dob = DateTime.Now,
                 PhoneNumber = string.Empty,
@@ -59,7 +77,7 @@ namespace API.Controllers
             CreatePasswordHash(Convert.ToString(Password), out byte[] passwordHash, out byte[] passwordSalt);
             var user = new User
             {
-                Username = classroom.ClassroomId + studentId,
+                Username = faculty.FacultyId + Convert.ToString(classroom.AcademicYear) + studentId,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 Role = request.Role,
@@ -114,11 +132,11 @@ namespace API.Controllers
         public async Task<ActionResult<string>> Login(LoginDto request)
         {
             User user = await _context.Users.Where(w => w.Username == request.Username).FirstAsync();
-            if(user == null)
+            if (user == null)
             {
                 return NotFound();
             }
-            if(Verified(request.Password, user.PasswordHash, user.PasswordSalt) == true)
+            if (Verified(request.Password, user.PasswordHash, user.PasswordSalt) == true)
             {
                 string token = CreateToken(user);
                 return Ok(token);
@@ -154,12 +172,12 @@ namespace API.Controllers
         public async Task<ActionResult<User>> ResetPassword(ResetPassowordDto request)
         {
             User user = await _context.Users.Where(w => w.Username == request.Username).FirstAsync();
-            if(user == null)
+            if (user == null)
             {
                 return NotFound();
             }
             UserInformation userInformation = await _context.UsersInformation.Where(w => w.UserId == user.UserInformationId).FirstOrDefaultAsync();
-            if(userInformation.PhoneNumber != request.PhoneNumber || userInformation.Email != request.Email)
+            if (userInformation.PhoneNumber != request.PhoneNumber || userInformation.Email != request.Email)
             {
                 return BadRequest("Uncertain Information");
             }
@@ -171,12 +189,65 @@ namespace API.Controllers
         }
         [Route("{userId}")]
         [HttpDelete]
-        public async Task<ActionResult<User>> Delete(int UserId)
+        public async Task<ActionResult<User>> Delete(int userId)
         {
-            User user = await _context.Users.FindAsync(UserId);
+            User user = await _context.Users.FindAsync(userId);
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        private int configId(string facultyId)
+        {
+            if (facultyId == "102")
+            {
+                return 7;
+            }
+            else if (facultyId == "101")
+            {
+                return 9;
+            }
+            else if (facultyId == "103")
+            {
+                return 3;
+            }
+            else if (facultyId == "104")
+            {
+                return 1;
+            }
+            else if (facultyId == "105")
+            {
+                return 76;
+            }
+            else if (facultyId == "106")
+            {
+                return 10;
+            }
+            else if (facultyId == "107")
+            {
+                return 25;
+            }
+            else if (facultyId == "109" || facultyId == "110")
+            {
+                return 19;
+            }
+            else if (facultyId == "111")
+            {
+                return 21;
+            }
+            else if (facultyId == "117")
+            {
+                return 5;
+            }
+            else if (facultyId == "118")
+            {
+                return 26;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
     }
 }

@@ -368,3 +368,4 @@ Properties/ServiceDependencies/
 Properties/serviceDependencies*
 
 appsettings.json
+CloudinaryAccount.cs
