@@ -44,7 +44,7 @@ namespace API.Controllers
             Faculty faculty = _context.Faculty.Where(w => w.FacultyId == request.FacultyId).FirstOrDefault();
             EducationalProgram educationalProgram = _context.EducationalProgram.Where(w => w.Id == request.EducationalProgramId).First();
             int AcademicYear = Convert.ToInt32(request.NameOfClassroom.Substring(0, 2));
-            int numberOfClasses = (_context.Classrooms.Where(w => w.AcademicYear == AcademicYear).ToList()).Count() + 1;
+            int numberOfClasses = (_context.Classrooms.Where(w => w.FacultyId == faculty.FacultyId).ToList()).Count() + 1;
             string classId;
             if (numberOfClasses < 10)
             {

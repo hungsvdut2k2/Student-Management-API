@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using IronXL;
-using System.Linq;
+using OfficeOpenXml;
+
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
@@ -220,24 +220,40 @@ namespace API.Controllers
                     data.files.CopyTo(fileStream);
                     fileStream.Flush();
                 }
-                WorkBook workBook = WorkBook.Load(_enviroment.WebRootPath + "\\Download\\" + data.files.FileName);
-                WorkSheet workSheet = workBook.WorkSheets.First();
-                //number of rows in a worksheet
-                int numberOfRows  = (workSheet.Count() / workSheet.ColumnCount);
-                for (int i = 2; i <= numberOfRows; i++)
+                //work with excel file
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                FileInfo fileInfo = new FileInfo(_enviroment.WebRootPath + "\\Download\\" + data.files.FileName);
+                ExcelPackage excelPackage = new ExcelPackage(fileInfo);
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                List<ReturnedAccount> accounts = new List<ReturnedAccount>();
+                int rows = worksheet.Dimension.Rows;
+                for (int i = 2; i <= rows; i++)
                 {
-                    var range = workSheet[$"A{i}:F{i}"].ToList();
                     RegisterDto request = new RegisterDto
                     {
-                        ClassroomId = range[0].Text,
-                        Name = range[2].Text,
-                        Gender = (range[3].Text == "Nam") ? true : false,
-                        Dob = range[4].Text,
-                        Email = range[5].Text
+                        ClassroomId = worksheet.Cells[i, 1].Text,
+                        Name = worksheet.Cells[i, 3].Text,
+                        Gender = worksheet.Cells[i, 4].Text != "Nam",
+                        Dob = worksheet.Cells[i, 5].Text,
+                        Email = worksheet.Cells[i, 6].Text,
+                        PhoneNumber = worksheet.Cells[i, 7].Text,
+                        Role = "Student"
                     };
-                    await Register(request);
+                    if(request != null)
+                    {
+                        var result = await Register(request);
+                        var castResult = (OkObjectResult)result.Result;
+                        var finalResult = (LoginDto)castResult.Value;
+                        var newAccount = new ReturnedAccount
+                        {
+                            Name = request.Name,
+                            ClassName = (_context.Classrooms.Find(request.ClassroomId)).Name,
+                            account = finalResult
+                        };
+                        accounts.Add(newAccount);   
+                    }
                 }
-                return Ok(data);
+                return Ok(accounts);
             }
             else
             {
@@ -252,7 +268,7 @@ namespace API.Controllers
             }
             else if (facultyId == "101")
             {
-                return 10;
+                return 9;
             }
             else if (facultyId == "103")
             {
