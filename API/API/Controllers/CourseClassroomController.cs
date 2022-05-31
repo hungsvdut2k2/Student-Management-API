@@ -59,31 +59,37 @@ namespace API.Controllers
         public async Task<ActionResult<CourseClassroomUserInformation>> Create(string UserInformationId, int CourseClassId)
         {
             UserInformation userInformation = await _context.UsersInformation.FindAsync(UserInformationId);
-            CourseClassroom courseClass = await _context.CoursesClassroom.FindAsync(CourseClassId); 
-            CourseClassroomUserInformation courseUserInformation = new CourseClassroomUserInformation
+            CourseClassroom courseClass = await _context.CoursesClassroom.FindAsync(CourseClassId);
+            //validation
+            Course registeredCourse = _context.Courses.Where(w => w.Id == courseClass.CourseId).First();
+            if(Validate(userInformation, registeredCourse))
             {
-                UserInformationId = UserInformationId,
-                UserInformation = userInformation,
-                CourseClassId = CourseClassId,
-                CourseClassroom = courseClass
-            };
-            Score score = new Score
-            {
-                UserInformation = userInformation,
-                UserInformationId = UserInformationId,
-                CourseClassroom = courseClass,
-                CourseClassroomId = CourseClassId,
-                ExcerciseRate = 0.2,
-                MidTermRate = 0.3,
-                FinalTermRate = 0.5,
-                ExcerciseScore = 0,
-                MidTermScore = 0,
-                FinalTermScore = 0
-            };
-            _context.Score.Add(score);
-            _context.CourseClassroomUserInformations.Add(courseUserInformation);
-            await _context.SaveChangesAsync();
-            return Ok(courseUserInformation);
+                CourseClassroomUserInformation courseUserInformation = new CourseClassroomUserInformation
+                {
+                    UserInformationId = UserInformationId,
+                    UserInformation = userInformation,
+                    CourseClassId = CourseClassId,
+                    CourseClassroom = courseClass
+                };
+                Score score = new Score
+                {
+                    UserInformation = userInformation,
+                    UserInformationId = UserInformationId,
+                    CourseClassroom = courseClass,
+                    CourseClassroomId = CourseClassId,
+                    ExcerciseRate = 0.2,
+                    MidTermRate = 0.3,
+                    FinalTermRate = 0.5,
+                    ExcerciseScore = 0,
+                    MidTermScore = 0,
+                    FinalTermScore = 0
+                };
+                _context.Score.Add(score);
+                _context.CourseClassroomUserInformations.Add(courseUserInformation);
+                await _context.SaveChangesAsync();
+                return Ok(courseUserInformation);
+            }
+            return BadRequest("Have Participated In This Course");
         }
 
         [HttpPost("course")]
@@ -99,6 +105,28 @@ namespace API.Controllers
             _context.CoursesClassroom.Add(courseClassroom);
             _context.SaveChangesAsync();
             return Ok(courseClassroom);
+        }
+        private bool Validate(UserInformation userInformation, Course registeredCourse)
+        {
+            List<CourseClassroomUserInformation> courseClassroomUserInformation = _context.CourseClassroomUserInformations.Where(w => w.UserInformationId == userInformation.UserId).ToList();
+            List<CourseClassroom> courseClassrooms = new List<CourseClassroom>();
+            List<Course> courseList = new List<Course>();
+            foreach(var courseClass in courseClassroomUserInformation)
+            {
+                CourseClassroom findingCourseClassroom = _context.CoursesClassroom.Where(w => w.CourseClassroomId == courseClass.CourseClassId).FirstOrDefault();
+                courseClassrooms.Add(findingCourseClassroom);
+            }
+            foreach(var courseClass in courseClassrooms)
+            {
+                Course findingCourse = _context.Courses.Where(w => w.Id == courseClass.CourseId).First();
+                courseList.Add(findingCourse);
+            }
+            foreach(var course in courseList)
+            {
+                if(course == registeredCourse)
+                    return false;
+            }
+            return true;
         }
     }
 }

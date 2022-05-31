@@ -2,6 +2,7 @@
 using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -151,6 +152,14 @@ namespace API.Controllers
         [HttpPost("image-upload/{userId}")]
         public async Task<ActionResult<string>>UploadImage([FromForm] FileUpLoadAPI objFiles, string userId)
         {
+            CloudinaryAccount cloudinaryAccount = new CloudinaryAccount();
+            Account account = new Account(
+                cloud : cloudinaryAccount.Cloud,
+                apiKey: cloudinaryAccount.ApiKey,
+                apiSecret: cloudinaryAccount.ApiSecret);
+
+            Cloudinary cloudinary = new Cloudinary(account);
+            cloudinary.Api.Secure = true;
             UserInformation userInformation = _context.UsersInformation.Find(userId);
             try
             {

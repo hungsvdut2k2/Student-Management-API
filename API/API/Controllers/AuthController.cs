@@ -196,7 +196,6 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-
         private int configId(string facultyId)
         {
             if (facultyId == "102")
