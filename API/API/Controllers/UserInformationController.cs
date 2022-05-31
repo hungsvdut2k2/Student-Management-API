@@ -3,6 +3,7 @@ using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
 using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -70,7 +71,8 @@ namespace API.Controllers
                 Gender = request.Gender,
                 PhoneNumber = request.PhoneNumber,
                 Classroom = classroom,
-                CourseClassroomUserInformation = null
+                CourseClassroomUserInformation = null,
+                ImageUrl = String.Empty
             };
             await _context.UsersInformation.AddAsync(newUserInformation);
             await _context.SaveChangesAsync();
@@ -171,14 +173,26 @@ namespace API.Controllers
                     }
 
                     using (FileStream fileStream =
-                           System.IO.File.Create(_enviroment.WebRootPath + "\\Upload\\" + objFiles.files.FileName))
+                           System.IO.File.Create(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId))
                     {
                         objFiles.files.CopyTo(fileStream);
                         fileStream.Flush();
-                        userInformation.ImageUrl = "\\Upload\\" + objFiles.files.FileName;
-                        _context.SaveChanges();
-                        return Ok(userInformation);
                     }
+                    if(userInformation.ImageUrl != String.Empty)
+                    {
+                        var deletedParam = new DeletionParams(userInformation.UserId);
+                        cloudinary.Destroy(deletedParam);
+                    }
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId),
+                        PublicId = userInformation.UserId
+                    };
+                    var uploadResult = cloudinary.Upload(uploadParams);
+                    System.IO.File.Delete(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId);
+                    userInformation.ImageUrl = uploadResult.PublicId;
+                    _context.SaveChanges();
+                    return Ok(uploadResult);
                 }
                 else
                 {
