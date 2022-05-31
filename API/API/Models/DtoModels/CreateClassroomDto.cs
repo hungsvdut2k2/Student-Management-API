@@ -4,5 +4,6 @@
     {
         public string NameOfClassroom { get; set; }
         public string FacultyId { get; set; }
+        public int EducationalProgramId { get; set; }
     }
 }

@@ -46,7 +46,7 @@ namespace API.Controllers
         {
             UserInformation newUserInformation =  await _context.UsersInformation.FindAsync(request.UserId);
             newUserInformation.Name = request.Name;
-            newUserInformation.Dob = request.Dob;
+            newUserInformation.Dob = string.Empty;
             newUserInformation.Email = request.Email;
             newUserInformation.Gender = request.Gender;
             newUserInformation.PhoneNumber = request.PhoneNumber;
@@ -66,7 +66,7 @@ namespace API.Controllers
             {
                 UserId = request.UserId,
                 Name = request.Name,
-                Dob = request.Dob,
+                Dob = string.Empty,
                 Email = request.Email,
                 Gender = request.Gender,
                 PhoneNumber = request.PhoneNumber,

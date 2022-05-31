@@ -14,5 +14,7 @@ namespace API.Models.DatabaseModels
         public Faculty Faculty { get; set; }
         [JsonIgnore]
         public string FacultyId { get; set; }
+        public EducationalProgram EducationalProgram { get; set; }
+        public int EducationalProgramId { get; set; }
     }
 }

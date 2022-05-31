@@ -11,7 +11,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
+using IronXL;
+using System.Linq;
 namespace API.Controllers
 {
     [EnableCors("Cau Khong")]
@@ -21,11 +22,13 @@ namespace API.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
+        public static IWebHostEnvironment _enviroment;
 
-        public AuthController(ApplicationDbContext context, IConfiguration configuration)
+        public AuthController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment environment)
         {
             _context = context;
             _configuration = configuration;
+            _enviroment = environment;
         }
         [HttpPost("register")]
         public async Task<ActionResult<LoginDto>> Register(RegisterDto request)
@@ -63,9 +66,9 @@ namespace API.Controllers
             {
                 UserId = faculty.FacultyId + Convert.ToString(classroom.AcademicYear) + studentId,
                 Name = request.Name,
-                Dob = DateTime.Now,
-                PhoneNumber = string.Empty,
-                Email = string.Empty,
+                Dob = request.Dob,
+                PhoneNumber = request.PhoneNumber,
+                Email = request.Email,
                 Gender = request.Gender,
                 ImageUrl = string.Empty,
                 Classroom = classroom,
@@ -196,6 +199,51 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+        public class FileUpLoadAPI
+        {
+            public IFormFile files { get; set; }
+        }
+        [HttpPost("upload-file")]
+        public async Task<ActionResult<List<LoginDto>>> uploadFile([FromForm] FileUpLoadAPI data)
+        {
+            //download file from client
+            if(data.files.Length > 0)
+            {
+                if (!Directory.Exists(_enviroment.WebRootPath + "\\Download\\"))
+                {
+                    Directory.CreateDirectory(_enviroment.WebRootPath + "\\Download\\");
+                }
+
+                using (FileStream fileStream =
+                       System.IO.File.Create(_enviroment.WebRootPath + "\\Download\\" + data.files.FileName))
+                {
+                    data.files.CopyTo(fileStream);
+                    fileStream.Flush();
+                }
+                WorkBook workBook = WorkBook.Load(_enviroment.WebRootPath + "\\Download\\" + data.files.FileName);
+                WorkSheet workSheet = workBook.WorkSheets.First();
+                //number of rows in a worksheet
+                int numberOfRows  = (workSheet.Count() / workSheet.ColumnCount);
+                for (int i = 2; i <= numberOfRows; i++)
+                {
+                    var range = workSheet[$"A{i}:F{i}"].ToList();
+                    RegisterDto request = new RegisterDto
+                    {
+                        ClassroomId = range[0].Text,
+                        Name = range[2].Text,
+                        Gender = (range[3].Text == "Nam") ? true : false,
+                        Dob = range[4].Text,
+                        Email = range[5].Text
+                    };
+                    await Register(request);
+                }
+                return Ok(data);
+            }
+            else
+            {
+                return BadRequest("File Not Found");
+            }
+        }
         private int configId(string facultyId)
         {
             if (facultyId == "102")
@@ -204,7 +252,7 @@ namespace API.Controllers
             }
             else if (facultyId == "101")
             {
-                return 9;
+                return 10;
             }
             else if (facultyId == "103")
             {
@@ -212,7 +260,7 @@ namespace API.Controllers
             }
             else if (facultyId == "104")
             {
-                return 1;
+                return 11;
             }
             else if (facultyId == "105")
             {
@@ -247,6 +295,5 @@ namespace API.Controllers
                 return 0;
             }
         }
-
     }
 }
