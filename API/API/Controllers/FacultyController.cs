@@ -24,7 +24,6 @@ namespace API.Controllers
         {
             return _context.Faculty.ToList();
         }
-
         [Route("classes")]
         [HttpGet]
         public async Task<ActionResult<List<ReturnedFacultyDto>>> GetClassroomByFacultyId()
