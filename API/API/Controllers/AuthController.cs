@@ -33,38 +33,12 @@ namespace API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<LoginDto>> Register(RegisterDto request)
         {
-            Classroom classroom = await _context.Classrooms.FindAsync(request.ClassroomId);
-            Faculty faculty = await _context.Faculty.FindAsync(classroom.FacultyId);
+            Classroom classroom = await _context.Classrooms.Where(w => w.Name == request.ClassName).FirstAsync();
+            Faculty faculty = await _context.Faculty.Where(w => w.FacultyId == classroom.FacultyId).FirstAsync();
             List<Classroom> classInFaculty = _context.Classrooms.Where(w => w.FacultyId == faculty.FacultyId).ToList();
-            int numberOfStudents = configId(faculty.FacultyId);
-            foreach (var findingClassroom in classInFaculty)
-            {
-                if (findingClassroom == classroom)
-                    break;
-                numberOfStudents += (_context.UsersInformation.Where(w => w.ClassroomId == findingClassroom.ClassroomId)
-                    .ToList()).Count;
-            }
-            numberOfStudents += (_context.UsersInformation.Where(w => w.ClassroomId == classroom.ClassroomId).ToList()).Count + 1;
-            string studentId;
-            if (numberOfStudents < 10)
-            {
-                studentId = "000" + Convert.ToString(numberOfStudents);
-            }
-            else if (numberOfStudents > 10 && numberOfStudents < 100)
-            {
-                studentId = "00" + Convert.ToString(numberOfStudents);
-            }
-            else if (numberOfStudents > 100 && numberOfStudents < 1000)
-            {
-                studentId = "0" + Convert.ToString(numberOfStudents);
-            }
-            else
-            {
-                studentId = Convert.ToString(numberOfStudents);
-            }
             var userInformation = new UserInformation
             {
-                UserId = faculty.FacultyId + Convert.ToString(classroom.AcademicYear) + studentId,
+                UserId = request.UserId,
                 Name = request.Name,
                 Dob = request.Dob,
                 PhoneNumber = request.PhoneNumber,
@@ -76,18 +50,18 @@ namespace API.Controllers
             };
             string Password = randomPassword();
             _context.UsersInformation.Add(userInformation);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             CreatePasswordHash(Convert.ToString(Password), out byte[] passwordHash, out byte[] passwordSalt);
             var user = new User
             {
-                Username = faculty.FacultyId + Convert.ToString(classroom.AcademicYear) + studentId,
+                Username = request.UserId,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 Role = request.Role,
                 UserInformation = userInformation
             };
             _context.Users.Add(user);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             LoginDto res = new LoginDto
             {
                 Username = user.Username,
@@ -207,7 +181,7 @@ namespace API.Controllers
         public async Task<ActionResult<List<LoginDto>>> uploadFile([FromForm] FileUpLoadAPI data)
         {
             //download file from client
-            if(data.files.Length > 0)
+            if (data.files.Length > 0)
             {
                 if (!Directory.Exists(_enviroment.WebRootPath + "\\Download\\"))
                 {
@@ -231,7 +205,8 @@ namespace API.Controllers
                 {
                     RegisterDto request = new RegisterDto
                     {
-                        ClassroomId = worksheet.Cells[i, 1].Text,
+                        ClassName = worksheet.Cells[i, 1].Text,
+                        UserId = worksheet.Cells[i, 2].Text,
                         Name = worksheet.Cells[i, 3].Text,
                         Gender = worksheet.Cells[i, 4].Text != "Nam",
                         Dob = worksheet.Cells[i, 5].Text,
@@ -239,77 +214,20 @@ namespace API.Controllers
                         PhoneNumber = worksheet.Cells[i, 7].Text,
                         Role = "Student"
                     };
-                    if(request != null)
+                    var result = await Register(request);
+                    var castResult = (OkObjectResult)result.Result;
+                    var finalResult = (LoginDto)castResult.Value;
+                    var account = new ReturnedAccount
                     {
-                        var result = await Register(request);
-                        var castResult = (OkObjectResult)result.Result;
-                        var finalResult = (LoginDto)castResult.Value;
-                        var newAccount = new ReturnedAccount
-                        {
-                            Name = request.Name,
-                            ClassName = (_context.Classrooms.Find(request.ClassroomId)).Name,
-                            account = finalResult
-                        };
-                        accounts.Add(newAccount);   
-                    }
+                        Name = request.Name,
+                        ClassName = request.ClassName,
+                        Account = finalResult
+                    };
+                    accounts.Add(account);
                 }
                 return Ok(accounts);
             }
-            else
-            {
-                return BadRequest("File Not Found");
-            }
-        }
-        private int configId(string facultyId)
-        {
-            if (facultyId == "102")
-            {
-                return 7;
-            }
-            else if (facultyId == "101")
-            {
-                return 9;
-            }
-            else if (facultyId == "103")
-            {
-                return 3;
-            }
-            else if (facultyId == "104")
-            {
-                return 11;
-            }
-            else if (facultyId == "105")
-            {
-                return 76;
-            }
-            else if (facultyId == "106")
-            {
-                return 10;
-            }
-            else if (facultyId == "107")
-            {
-                return 25;
-            }
-            else if (facultyId == "109" || facultyId == "110")
-            {
-                return 19;
-            }
-            else if (facultyId == "111")
-            {
-                return 21;
-            }
-            else if (facultyId == "117")
-            {
-                return 5;
-            }
-            else if (facultyId == "118")
-            {
-                return 26;
-            }
-            else
-            {
-                return 0;
-            }
+            return BadRequest();
         }
     }
 }
