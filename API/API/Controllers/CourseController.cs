@@ -1,5 +1,6 @@
 ﻿using API.Data;
 using API.Models.DatabaseModels;
+using API.Models.DtoModels;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -57,6 +58,30 @@ namespace API.Controllers
                 where w.CourseId == courseId
                 select w).ToList();
             return Ok(classList);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Course>> CreateCourse(CreateCourseDto request)
+        {
+            EducationalProgram educationalProgram = await _context.EducationalProgram.FindAsync(request.EducationalProgramId);
+            var newCourse = new Course
+            {
+                Name = request.Name,
+                Credits = request.Credits,
+                CourseClassrooms = null,
+                CourseEducationalProgram = null
+            };
+            CourseEducationalProgram courseEducationalProgram = new CourseEducationalProgram
+            {
+                Course = newCourse,
+                CourseId = newCourse.Id,
+                EducationalProgram = educationalProgram,
+                EducationalProgramId = educationalProgram.Id
+            };
+            _context.Courses.Add(newCourse);
+            _context.CourseEducationalPrograms.Add(courseEducationalProgram);
+            _context.SaveChanges();
+            return Ok(newCourse);
         }
     }
 }

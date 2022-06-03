@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using API.Data;
 using API.Models;
 using API.Models.DatabaseModels;
+using Microsoft.AspNetCore.Cors;
 
 namespace API.Controllers
 {
+    [EnableCors("Cau Khong")]
     [Route("api/educational-program")]
     [ApiController]
     public class EducationalProgramController : ControllerBase
@@ -16,23 +18,31 @@ namespace API.Controllers
         {
             _context = context;
         }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EducationalProgram>>> Get(int Id)
+        public async Task<ActionResult<List<EducationalProgram>>> GetAll()
+        {
+            List<EducationalProgram> educationalPrograms = _context.EducationalProgram.ToList();
+            return Ok(educationalPrograms);
+        }
+        [HttpGet("{Id}")]
+        public async Task<ActionResult<EducationalProgram>> Get(int Id)
         {
             EducationalProgram educationalProgram = _context.EducationalProgram.Find(Id);
             return Ok(educationalProgram);
         }
 
-        [HttpPost("{id}/{name}")]
-        public async Task<ActionResult<EducationalProgram>> Create(int id, string name)
+        [HttpPost("{name}")]
+        public async Task<ActionResult<EducationalProgram>> Create(string name)
         {
             var educationalProgram = new EducationalProgram
             {
-                Id = id,
                 Name = name,
                 CourseEducationalProgram = null
             };
-            return Ok(Get(educationalProgram.Id));
+            _context.Add(educationalProgram);
+            _context.SaveChanges();
+            return Ok((educationalProgram));
         }
     }
 }

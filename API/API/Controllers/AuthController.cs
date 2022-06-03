@@ -24,18 +24,19 @@ namespace API.Controllers
         private readonly IConfiguration _configuration;
         public static IWebHostEnvironment _enviroment;
 
-        public AuthController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment environment)
+        public AuthController(ApplicationDbContext context, IConfiguration configuration,
+            IWebHostEnvironment environment)
         {
             _context = context;
             _configuration = configuration;
             _enviroment = environment;
         }
+
         [HttpPost("register")]
         public async Task<ActionResult<LoginDto>> Register(RegisterDto request)
         {
             Classroom classroom = await _context.Classrooms.Where(w => w.Name == request.ClassName).FirstAsync();
             Faculty faculty = await _context.Faculty.Where(w => w.FacultyId == classroom.FacultyId).FirstAsync();
-            List<Classroom> classInFaculty = _context.Classrooms.Where(w => w.FacultyId == faculty.FacultyId).ToList();
             var userInformation = new UserInformation
             {
                 UserId = request.UserId,
@@ -70,6 +71,61 @@ namespace API.Controllers
             return Ok(res);
         }
 
+        [HttpPost]
+        public async Task<ActionResult<List<ReturnedAccount>>> CreateAccounts(List<RegisterDto> requests)
+        {
+            List<User> accounts = new List<User>();
+            List<UserInformation> userInformations = new List<UserInformation>();
+            List<ReturnedAccount> result = new List<ReturnedAccount>();
+            foreach (var request in requests)
+            {
+                Classroom classroom = _context.Classrooms.Where(w => w.Name == request.ClassName).FirstOrDefault();
+                if (classroom != null)
+                {
+                    var userInformation = new UserInformation
+                    {
+                        UserId = request.UserId,
+                        Name = request.Name,
+                        Dob = request.Dob,
+                        PhoneNumber = request.PhoneNumber,
+                        Email = request.Email,
+                        Gender = request.Gender,
+                        ImageUrl = string.Empty,
+                        Classroom = classroom,
+                        CourseClassroomUserInformation = null
+                    };
+                    string Password = randomPassword();
+                    CreatePasswordHash(Convert.ToString(Password), out byte[] passwordHash, out byte[] passwordSalt);
+                    var newUser = new User
+                    {
+                        Username = request.UserId,
+                        PasswordHash = passwordHash,
+                        PasswordSalt = passwordSalt,
+                        UserInformation = userInformation,
+                        Role = request.Role
+                    };
+                    var newLoginDto = new LoginDto
+                    {
+                        Username = newUser.Username,
+                        Password = Password
+                    };
+                    var newAccount = new ReturnedAccount
+                    {
+                        Name = request.Name,
+                        ClassName = request.ClassName,
+                        Account = newLoginDto
+                    };
+                    result.Add(newAccount);
+                    accounts.Add(newUser);
+                    userInformations.Add(userInformation);
+                }
+            }
+            _context.UsersInformation.AddRange(userInformations);
+            _context.Users.AddRange(accounts);
+            _context.SaveChanges();
+            return Ok(result);
+        }
+
         private string randomPassword()
         {
             StringBuilder str_build = new StringBuilder();
@@ -87,6 +143,7 @@ namespace API.Controllers
 
             return str_build.ToString();
         }
+
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())
@@ -105,6 +162,7 @@ namespace API.Controllers
                 return BadRequest("Not Found");
             return Ok(user);
         }
+
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(LoginDto request)
         {
@@ -113,13 +171,16 @@ namespace API.Controllers
             {
                 return NotFound();
             }
+
             if (Verified(request.Password, user.PasswordHash, user.PasswordSalt) == true)
             {
                 string token = CreateToken(user);
                 return Ok(token);
             }
+
             return BadRequest("Wrong Password");
         }
+
         private bool Verified(string password, byte[] passwordHash, byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512(passwordSalt))
@@ -128,15 +189,17 @@ namespace API.Controllers
                 return computedHash.SequenceEqual(passwordHash);
             }
         }
+
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Name, user.Username),
-                new Claim("role",user.Role),
+                new Claim("role", user.Role),
                 new Claim(JwtRegisteredClaimNames.NameId, user.UserInformationId)
             };
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+            var key = new SymmetricSecurityKey(
+                System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
             var token = new JwtSecurityToken(
                 claims: claims,
@@ -145,6 +208,7 @@ namespace API.Controllers
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
         }
+
         [HttpPut("reset-password")]
         public async Task<ActionResult<User>> ResetPassword(ResetPassowordDto request)
         {
@@ -153,17 +217,21 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            UserInformation userInformation = await _context.UsersInformation.Where(w => w.UserId == user.UserInformationId).FirstOrDefaultAsync();
+
+            UserInformation userInformation = await _context.UsersInformation
+                .Where(w => w.UserId == user.UserInformationId).FirstOrDefaultAsync();
             if (userInformation.PhoneNumber != request.PhoneNumber || userInformation.Email != request.Email)
             {
                 return BadRequest("Uncertain Information");
             }
+
             CreatePasswordHash(request.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
             await _context.SaveChangesAsync();
             return Ok(user);
         }
+
         [Route("{userId}")]
         [HttpDelete]
         public async Task<ActionResult<User>> Delete(int userId)
@@ -173,10 +241,12 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
         public class FileUpLoadAPI
         {
             public IFormFile files { get; set; }
         }
+
         [HttpPost("upload-file")]
         public async Task<ActionResult<List<LoginDto>>> uploadFile([FromForm] FileUpLoadAPI data)
         {
@@ -194,12 +264,13 @@ namespace API.Controllers
                     data.files.CopyTo(fileStream);
                     fileStream.Flush();
                 }
+
                 //work with excel file
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 FileInfo fileInfo = new FileInfo(_enviroment.WebRootPath + "\\Download\\" + data.files.FileName);
                 ExcelPackage excelPackage = new ExcelPackage(fileInfo);
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                List<ReturnedAccount> accounts = new List<ReturnedAccount>();
+                List<RegisterDto> registerList = new List<RegisterDto>();
                 int rows = worksheet.Dimension.Rows;
                 for (int i = 2; i <= rows; i++)
                 {
@@ -208,24 +279,18 @@ namespace API.Controllers
                         ClassName = worksheet.Cells[i, 1].Text,
                         UserId = worksheet.Cells[i, 2].Text,
                         Name = worksheet.Cells[i, 3].Text,
-                        Gender = worksheet.Cells[i, 4].Text != "Nam",
+                        Gender = worksheet.Cells[i, 4].Text != "Nữ",
                         Dob = worksheet.Cells[i, 5].Text,
                         Email = worksheet.Cells[i, 6].Text,
                         PhoneNumber = worksheet.Cells[i, 7].Text,
                         Role = "Student"
                     };
-                    var result = await Register(request);
-                    var castResult = (OkObjectResult)result.Result;
-                    var finalResult = (LoginDto)castResult.Value;
-                    var account = new ReturnedAccount
-                    {
-                        Name = request.Name,
-                        ClassName = request.ClassName,
-                        Account = finalResult
-                    };
-                    accounts.Add(account);
+                    registerList.Add(request);
                 }
-                return Ok(accounts);
+                var result = await CreateAccounts(registerList);
+                var castResult = (OkObjectResult)result.Result;
+                var finalResult = (List<ReturnedAccount>)castResult.Value;
+                return Ok(finalResult);
             }
             return BadRequest();
         }

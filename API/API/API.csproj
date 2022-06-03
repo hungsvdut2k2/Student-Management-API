@@ -28,6 +28,7 @@
 
   <ItemGroup>
 	  	  <Folder Include="wwwroot\" />
+	  	  <Folder Include="wwwroot\Download\" />
 	  	  <Folder Include="wwwroot\Upload\" />
   </ItemGroup>
 
