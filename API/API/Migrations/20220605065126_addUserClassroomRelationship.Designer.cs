@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220605065126_addUserClassroomRelationship")]
+    partial class addUserClassroomRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -173,49 +175,6 @@ namespace API.Migrations
                     b.ToTable("Faculty");
                 });
 
-            modelBuilder.Entity("API.Models.DatabaseModels.Score", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("CourseClassroomId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<double>("ExcerciseRate")
-                        .HasColumnType("float");
-
-                    b.Property<double>("ExcerciseScore")
-                        .HasColumnType("float");
-
-                    b.Property<double>("FinalTermRate")
-                        .HasColumnType("float");
-
-                    b.Property<double>("FinalTermScore")
-                        .HasColumnType("float");
-
-                    b.Property<double>("MidTermRate")
-                        .HasColumnType("float");
-
-                    b.Property<double>("MidTermScore")
-                        .HasColumnType("float");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseClassroomId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Score");
-                });
-
             modelBuilder.Entity("API.Models.DatabaseModels.User", b =>
                 {
                     b.Property<string>("UserId")
@@ -328,25 +287,6 @@ namespace API.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("EducationalProgram");
-                });
-
-            modelBuilder.Entity("API.Models.DatabaseModels.Score", b =>
-                {
-                    b.HasOne("API.Models.DatabaseModels.CourseClassroom", "CourseClassroom")
-                        .WithMany()
-                        .HasForeignKey("CourseClassroomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Models.DatabaseModels.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CourseClassroom");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("API.Models.DatabaseModels.User", b =>

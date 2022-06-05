@@ -1,19 +1,18 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace API.Models.DatabaseModels
 {
     public class Score
     {
-        [JsonIgnore]
         public int Id { get; set; }
         [JsonIgnore]
-        public UserInformation UserInformation { get; set; }
+        public User User { get; set; }
         [JsonIgnore]
-        public string UserInformationId { get; set; }
+        public string UserId { get; set; }
         [JsonIgnore]
         public CourseClassroom CourseClassroom { get; set; }
         [JsonIgnore]
-        public int CourseClassroomId { get; set; }
+        public string CourseClassroomId { get; set; }
         public double ExcerciseScore { get; set; }
         public double MidTermScore { get; set; }
         public double FinalTermScore { get; set; }

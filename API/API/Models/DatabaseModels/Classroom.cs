@@ -10,13 +10,13 @@ namespace API.Models.DatabaseModels
         public string Name { get; set; }
         public int AcademicYear { get; set; }
         [JsonIgnore]
-        public List<UserInformation> Students { get; set; }
+        public List<User> Students { get; set; }
         [JsonIgnore]
         public Faculty Faculty { get; set; }
         [JsonIgnore]
         public string FacultyId { get; set; }
         [JsonIgnore]
         public EducationalProgram EducationalProgram { get; set; }
-        public int EducationalProgramId { get; set; }
+        public string EducationalProgramId { get; set; }
     }
 }

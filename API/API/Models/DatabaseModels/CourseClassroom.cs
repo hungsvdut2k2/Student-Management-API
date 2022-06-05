@@ -6,13 +6,11 @@ namespace API.Models.DatabaseModels
     public class CourseClassroom
     {
         [Key]
-        public int CourseClassroomId { get; set; }
+        public string CourseClassId { get; set; }
         public string TeacherName { get; set; }
-        public DateTime Schedule { get; set; }
+        public string Schedule { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Course Course { get; set; }
-        [JsonIgnore]
-        public int CourseId { get; set; }
-        [JsonIgnore]
-        public ICollection<CourseClassroomUserInformation> CourseClassroomUserInformation { get; set; }
+        public string CourseId { get; set; }
     }
 }

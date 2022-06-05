@@ -1,16 +1,18 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace API.Models.DatabaseModels
 {
     public class User
     {
-        public int Id { get; set; }
-        public string Username { get; set; }
-        public byte[] PasswordHash { get; set; }
-        public byte[] PasswordSalt { get; set; }
-        public string Role { get; set; }
-        [JsonIgnore]
-        public UserInformation UserInformation { get; set; }
-        public string UserInformationId { get; set; }
+        [Key]
+        public string UserId { get; set; }
+        public string Name { get; set; }
+        public string Dob { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
+        public bool Gender { get; set; }
+        public string ImageUrl { get; set; }
+        public Classroom Classroom { get; set; }
+        public string ClassroomId { get; set; }
     }
 }

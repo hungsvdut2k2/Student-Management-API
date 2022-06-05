@@ -1,16 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace API.Models.DatabaseModels
 {
     public class Course
     {
-        public int Id { get; set; }
+        [Key]
+        public string CourseId { get; set; }
         public string Name { get; set; }
         public int Credits { get; set; }
-        [JsonIgnore]
-        public List<CourseClassroom> CourseClassrooms { get; set; }
-        [JsonIgnore]
-        public ICollection<CourseEducationalProgram> CourseEducationalProgram { get; set; }
+        public string? requiredCourseId { get; set; }
     }
 }

@@ -2,8 +2,8 @@
 {
     public class CreateClassroomDto
     {
-        public string NameOfClassroom { get; set; }
+        public string Name { get; set; }
         public string FacultyId { get; set; }
-        public int EducationalProgramId { get; set; }
+        public string EducationalProgramId { get; set; }
     }
 }

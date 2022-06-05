@@ -1,11 +1,10 @@
-﻿using API.Models.DatabaseModels;
-
-namespace API.Models.DtoModels
+﻿namespace API.Models.DtoModels
 {
     public class CreateCourseClassroomDto
     {
+        public string CourseClassId { get; set; }
         public string TeacherName { get; set; }
-        public DateTime Schedule { get; set; } = DateTime.Now;
-        public int CourseId { get; set; }
+        public string Schedule { get; set; }
+        public string CourseId { get; set; }
     }
 }
