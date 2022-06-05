@@ -11,5 +11,6 @@ namespace API.Models.DatabaseModels
         public string Name { get; set; }
         public int Credits { get; set; }
         public string? requiredCourseId { get; set; }
+        public bool? isAvailable { get; set; }
     }
 }

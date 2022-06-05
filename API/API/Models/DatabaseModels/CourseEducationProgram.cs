@@ -10,5 +10,6 @@ namespace API.Models.DatabaseModels
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public EducationalProgram EducationalProgram { get; set; }
         public string EducationalProgramId { get; set; }
+        public int Semester { get; set; }
     }
 }

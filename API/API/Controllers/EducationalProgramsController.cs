@@ -123,20 +123,21 @@ namespace API.Controllers
             return NoContent();
         }
         //Add course to Educational Program
-        [HttpPost("course/{educationalProgramId}/{courseId}")]
-        public async Task<ActionResult<CourseEducationProgram>> AddCourse(string educationalProgramId, string courseId)
+        [HttpPost("course")]
+        public async Task<ActionResult<CourseEducationProgram>> AddCourse(AddCourseToEducationalProgramDto request)
         {
-            Course course = _context.Courses.Find(courseId);
-            EducationalProgram educationalProgram = _context.EducationalProgram.Find(educationalProgramId);
+            Course course = _context.Courses.Find(request.CourseId);
+            EducationalProgram educationalProgram = _context.EducationalProgram.Find(request.EducationalProgramId);
             if (course != null && educationalProgram != null)
             {
                 var courseEducationalProgram = new CourseEducationProgram
                 {
                     Course = course,
-                    EducationalProgram = educationalProgram
+                    EducationalProgram = educationalProgram,
+                    Semester = request.Semester,
                 };
                 _context.CourseEducationProgram.Add(courseEducationalProgram);
-                _context.SaveChanges();
+                _context.SaveChanges(); 
                 return Ok(courseEducationalProgram);
             }
 

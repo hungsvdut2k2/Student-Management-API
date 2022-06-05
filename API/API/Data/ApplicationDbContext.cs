@@ -15,6 +15,8 @@ namespace API.Data
                 .HasKey(courseEdu => new { courseEdu.CourseId, courseEdu.EducationalProgramId });
             modelBuilder.Entity<UserCourseClassroom>()
                 .HasKey(userCourseClass => new { userCourseClass.UserId, userCourseClass.CourseClassroomId });
+            modelBuilder.Entity<UserCourse>()
+                .HasKey(userCourse => new {userCourse.UserId, userCourse.CourseId});
         }
         public DbSet<Course> Courses { get; set; }
         public DbSet<EducationalProgram> EducationalProgram { get; set; }
@@ -26,5 +28,6 @@ namespace API.Data
         public DbSet<Classroom> Classroom { get; set; }
         public DbSet<Faculty>  Faculty { get; set; }
         public DbSet<Score> Score { get; set; }
+        public DbSet<UserCourse> UserCourse { get; set; }
     }
 }

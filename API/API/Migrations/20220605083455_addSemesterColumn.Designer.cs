@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220605083455_addSemesterColumn")]
+    partial class addSemesterColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,9 +99,6 @@ namespace API.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("isAvailable")
-                        .HasColumnType("bit");
 
                     b.Property<string>("requiredCourseId")
                         .HasColumnType("nvarchar(max)");
@@ -261,21 +260,6 @@ namespace API.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("API.Models.DatabaseModels.UserCourse", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CourseId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserId", "CourseId");
-
-                    b.HasIndex("CourseId");
-
-                    b.ToTable("UserCourse");
-                });
-
             modelBuilder.Entity("API.Models.DatabaseModels.UserCourseClassroom", b =>
                 {
                     b.Property<string>("UserId")
@@ -379,25 +363,6 @@ namespace API.Migrations
                         .IsRequired();
 
                     b.Navigation("Classroom");
-                });
-
-            modelBuilder.Entity("API.Models.DatabaseModels.UserCourse", b =>
-                {
-                    b.HasOne("API.Models.DatabaseModels.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Models.DatabaseModels.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("API.Models.DatabaseModels.UserCourseClassroom", b =>
