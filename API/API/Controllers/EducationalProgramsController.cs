@@ -10,6 +10,7 @@ using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
 using Microsoft.AspNetCore.Cors;
+using OfficeOpenXml;
 
 namespace API.Controllers
 {
@@ -20,10 +21,12 @@ namespace API.Controllers
     public class EducationalProgramsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        public static IWebHostEnvironment _enviroment;
 
-        public EducationalProgramsController(ApplicationDbContext context)
+        public EducationalProgramsController(ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _enviroment = environment;
         }
 
         // GET: api/EducationalPrograms
@@ -57,7 +60,7 @@ namespace API.Controllers
 
         [HttpGet("course/{id}")]
 
-        public async Task<ActionResult<IEnumerable<EducationalProgram>>> GetAllCourseInEducationalProgram(string id)
+        public async Task<ActionResult<IEnumerable<Course>>> GetAllCourseInEducationalProgram(string id)
         {
             IEnumerable<CourseEducationProgram> courseEducationProgrames = _context.CourseEducationProgram.Where(courseEdu => courseEdu.EducationalProgramId == id).ToList();
             List<Course> courses = new List<Course>();
@@ -143,7 +146,66 @@ namespace API.Controllers
 
             return NotFound();
         }
+        public class FileUpLoadAPI
+        {
+            public IFormFile files { get; set; }
+        }
+        [HttpPost("upload-file")]
+        public async Task<ActionResult<List<CreateCourseDto>>> UploadTask([FromForm] FileUpLoadAPI data)
+        {
+            //download file from client
+            if (data.files.Length > 0)
+            {
+                if (!Directory.Exists(_enviroment.WebRootPath + "\\Download\\"))
+                {
+                    Directory.CreateDirectory(_enviroment.WebRootPath + "\\Download\\");
+                }
 
+                using (FileStream fileStream =
+                       System.IO.File.Create(_enviroment.WebRootPath + "\\Download\\" + data.files.FileName))
+                {
+                    data.files.CopyTo(fileStream);
+                    fileStream.Flush();
+                }
+
+                //work with excel file
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                FileInfo fileInfo = new FileInfo(_enviroment.WebRootPath + "\\Download\\" + data.files.FileName);
+                ExcelPackage excelPackage = new ExcelPackage(fileInfo);
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                List<AddCourseToEducationalProgramDto> request = new List<AddCourseToEducationalProgramDto>();
+                List<CourseEducationProgram> courses = new List<CourseEducationProgram>();
+                int rows = worksheet.Dimension.Rows;
+                for (int i = 2; i <= rows; i++)
+                {
+                    var newCourse = new AddCourseToEducationalProgramDto()
+                    {
+                        CourseId = worksheet.Cells[i, 3].Text,
+                        EducationalProgramId = worksheet.Cells[i,2].Text,
+                        Semester = Convert.ToInt32(worksheet.Cells[i,1].Text)
+                    };
+                    request.Add(newCourse);
+                }
+
+                foreach (var item in request)
+                {
+                    Course course = _context.Courses.Find(item.CourseId);
+                    EducationalProgram educationalProgram = _context.EducationalProgram.Find(item.EducationalProgramId);
+                    var courseEducationalProgram = new CourseEducationProgram
+                    {
+                        Course = course,
+                        EducationalProgram = educationalProgram,
+                        Semester = item.Semester,
+                    };
+                    courses.Add(courseEducationalProgram);
+                }
+                _context.CourseEducationProgram.AddRange(courses);
+                _context.SaveChangesAsync();
+                return Ok(courses);
+            }
+
+            return BadRequest();
+        }
         private bool EducationalProgramExists(string id)
         {
             return (_context.EducationalProgram?.Any(e => e.EducationalProgramId == id)).GetValueOrDefault();

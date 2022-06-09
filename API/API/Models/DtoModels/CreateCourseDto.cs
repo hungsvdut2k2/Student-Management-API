@@ -4,7 +4,7 @@
     {
         public string CourseId { get; set; }
         public string Name { get; set; }
-        public int Credits { get; set; }
+        public double Credits { get; set; }
         public string? requiredCourseId { get; set; }
     }
 }
