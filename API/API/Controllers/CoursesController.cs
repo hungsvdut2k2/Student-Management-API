@@ -146,13 +146,40 @@ namespace API.Controllers
                 }
             }
             //check completed course
+            List<Course> unfinishedCourses = new List<Course>();
+            List<UserCourse> completedCourses = _context.UserCourse.Where(w => w.UserId == userId).ToList();
             List<Course> finalList = new List<Course>();
             foreach (var item in availableCourses)
             {
                 UserCourse completedCourse = _context.UserCourse
                     .Where(w => w.UserId == userId && w.CourseId == item.CourseId).FirstOrDefault();
                 if(completedCourse == null)
-                    finalList.Add(item);
+                    unfinishedCourses.Add(item);
+            }
+            //check requirement 
+            foreach (var course in unfinishedCourses)
+            {
+                if (course.requiredCourseId == string.Empty)
+                {
+                    finalList.Add(course);
+                }
+                else
+                {
+                    bool flag = false;
+                    foreach (var item in completedCourses)
+                    {
+                        if (course.CourseId == item.CourseId)
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+
+                    if (flag == true)
+                    {
+                        finalList.Add(course);
+                    }
+                }
             }
             return Ok(finalList);
         }
