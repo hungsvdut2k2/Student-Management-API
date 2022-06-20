@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Cors;
 namespace API.Controllers
 {
 
-    [EnableCors("Cau Khong")]
+    [EnableCors("Allow CORS")]
     [Route("api/faculty")]
     [ApiController]
     public class FacultiesController : ControllerBase
@@ -52,6 +52,14 @@ namespace API.Controllers
             }
 
             return faculty;
+        }
+
+        [HttpGet("classes")]
+        public async Task<ActionResult<IEnumerable<Classroom>>> GetAllClasses()
+        {
+            List<Classroom> classrooms =
+                _context.Classroom.ToList();
+            return Ok(classrooms);
         }
 
         [HttpGet("classes/{facultyId}")]

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [EnableCors("Cau Khong")]
+    [EnableCors("Allow CORS")]
     [Route("api/score")]
     [ApiController]
     public class ScoreController : ControllerBase
