@@ -9,7 +9,6 @@ namespace API.Models.DatabaseModels
         public string ClassroomId { get; set; }
         public string Name { get; set; }
         public int AcademicYear { get; set; }
-        //[JsonIgnore]
         public List<User> Students { get; set; }
         [JsonIgnore]
         public Faculty Faculty { get; set; }
