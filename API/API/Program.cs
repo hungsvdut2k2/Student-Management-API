@@ -32,7 +32,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: "Cau Khong",
+    options.AddPolicy(name: "Allow CORS",
         builder =>
         {
             builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
@@ -56,7 +56,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors("Cau Khong");
+app.UseCors("Allow CORS");
 app.UseStaticFiles();
 
 app.UseHttpsRedirection();

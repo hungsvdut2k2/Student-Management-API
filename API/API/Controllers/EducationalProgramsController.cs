@@ -15,7 +15,7 @@ using OfficeOpenXml;
 namespace API.Controllers
 {
 
-    [EnableCors("Cau Khong")]
+    [EnableCors("Allow CORS")]
     [Route("api/education-program")]
     [ApiController]
     public class EducationalProgramsController : ControllerBase

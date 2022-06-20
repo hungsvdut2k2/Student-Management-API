@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Cors;
 namespace API.Controllers
 {
 
-    [EnableCors("Cau Khong")]
+    [EnableCors("Allow CORS")]
     [Route("api/course-classroom")]
     [ApiController]
     public class CourseClassroomsController : ControllerBase

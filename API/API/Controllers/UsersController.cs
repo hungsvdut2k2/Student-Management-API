@@ -15,7 +15,7 @@ using Account = API.Models.DatabaseModels.Account;
 
 namespace API.Controllers
 {
-    [EnableCors("Cau Khong")]
+    [EnableCors("Allow CORS")]
     [Route("api/user")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -140,62 +140,62 @@ namespace API.Controllers
             public IFormFile files { get; set; }
         }
 
-        [HttpPost("image-upload/{userId}")]
-        public async Task<ActionResult<string>> UploadImage([FromForm] FileUpLoadAPI objFiles, string userId)
-        {
-            CloudinaryAccount cloudinaryAccount = new CloudinaryAccount();
-            var account = new CloudinaryDotNet.Account(
-            cloud: cloudinaryAccount.Cloud,
-            apiKey: cloudinaryAccount.ApiKey,
-            apiSecret: cloudinaryAccount.ApiSecret);
+        //[HttpPost("image-upload/{userId}")]
+        //public async Task<ActionResult<string>> UploadImage([FromForm] FileUpLoadAPI objFiles, string userId)
+        //{
+        //     CloudinaryAccount cloudinaryAccount = new CloudinaryAccount();
+        //    var account = new CloudinaryDotNet.Account(
+        //    cloud: cloudinaryAccount.Cloud,
+        //    apiKey: cloudinaryAccount.ApiKey,
+        //    apiSecret: cloudinaryAccount.ApiSecret);
 
 
-            Cloudinary cloudinary = new Cloudinary(account);
-            cloudinary.Api.Secure = true;
-            User userInformation = _context.User.Find(userId);
-            try
-            {
-                if (objFiles.files.Length > 0)
-                {
-                    if (!Directory.Exists(_enviroment.WebRootPath + "\\Upload\\"))
-                    {
-                        Directory.CreateDirectory(_enviroment.WebRootPath + "\\Upload\\");
-                    }
+        //    Cloudinary cloudinary = new Cloudinary(account);
+        //    cloudinary.Api.Secure = true;
+        //    User userInformation = _context.User.Find(userId);
+        //    try
+        //    {
+        //        if (objFiles.files.Length > 0)
+        //        {
+        //            if (!Directory.Exists(_enviroment.WebRootPath + "\\Upload\\"))
+        //            {
+        //                Directory.CreateDirectory(_enviroment.WebRootPath + "\\Upload\\");
+        //            }
 
-                    using (FileStream fileStream =
-                           System.IO.File.Create(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId))
-                    {
-                        objFiles.files.CopyTo(fileStream);
-                        fileStream.Flush();
-                    }
+        //            using (FileStream fileStream =
+        //                   System.IO.File.Create(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId))
+        //            {
+        //                objFiles.files.CopyTo(fileStream);
+        //                fileStream.Flush();
+        //            }
 
-                    if (userInformation.ImageUrl != String.Empty)
-                    {
-                        var deletedParam = new DeletionParams(userInformation.UserId);
-                        cloudinary.Destroy(deletedParam);
-                    }
+        //            if (userInformation.ImageUrl != String.Empty)
+        //            {
+        //                var deletedParam = new DeletionParams(userInformation.UserId);
+        //                cloudinary.Destroy(deletedParam);
+        //            }
 
-                    var uploadParams = new ImageUploadParams()
-                    {
-                        File = new FileDescription(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId),
-                        PublicId = userInformation.UserId
-                    };
-                    var uploadResult = cloudinary.Upload(uploadParams);
-                    System.IO.File.Delete(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId);
-                    userInformation.ImageUrl = uploadResult.PublicId;
-                    _context.SaveChanges();
-                    return Ok(uploadResult.Url);
-                }
-                else
-                {
-                    return "failed";
-                }
-            }
-            catch (Exception e)
-            {
+        //            var uploadParams = new ImageUploadParams()
+        //            {
+        //                File = new FileDescription(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId),
+        //                PublicId = userInformation.UserId
+        //            };
+        //            var uploadResult = cloudinary.Upload(uploadParams);
+        //            System.IO.File.Delete(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId);
+        //            userInformation.ImageUrl = uploadResult.PublicId;
+        //            _context.SaveChanges();
+        //            return Ok(uploadResult.Url);
+        //        }
+        //        else
+        //        {
+        //            return "failed";
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
 
-                return e.Message.ToString();
-            }
-        }
+        //        return e.Message.ToString();
+        //    }
+        //}
     }
 }
