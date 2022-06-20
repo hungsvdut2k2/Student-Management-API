@@ -54,6 +54,14 @@ namespace API.Controllers
             return faculty;
         }
 
+        [HttpGet("classes/{facultyId}")]
+        public async Task<ActionResult<IEnumerable<Classroom>>> GetAllClassesInFaculty(string facultyId)
+        {
+            List<Classroom> classrooms =
+                _context.Classroom.Where(classroom => classroom.FacultyId == facultyId).ToList();
+            return Ok(classrooms);
+        }
+
 
         // POST: api/Faculties
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
