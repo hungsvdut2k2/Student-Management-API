@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Cors;
 
 namespace API.Controllers
 {
-
     [EnableCors("Allow CORS")]
     [Route("api/classroom")]
     [ApiController]
