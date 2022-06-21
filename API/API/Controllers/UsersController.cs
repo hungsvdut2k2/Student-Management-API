@@ -51,6 +51,7 @@ namespace API.Controllers
             var returnedInformation = new
             {
                 UserInformation = userInformation,
+                ClassroomName = classroom.Name,
                 EducationalProgram = educationalProgram,
                 Faculty = faculty
             };
