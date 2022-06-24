@@ -198,5 +198,12 @@ namespace API.Controllers
         //        return e.Message.ToString();
         //    }
         //}
+        [HttpGet("teacher/course-classroom/{teacherName}")]
+        public async Task<ActionResult<List<CourseClassroom>>> GetAllClassesOfTeacher(string teacherName)
+        {
+            List<CourseClassroom> courseClassrooms = _context.CourseClassroom
+                .Where(courseClass => courseClass.TeacherName == teacherName).ToList();
+            return Ok(courseClassrooms);
+        }
     }
 }

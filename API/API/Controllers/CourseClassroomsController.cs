@@ -79,8 +79,7 @@ namespace API.Controllers
           {
               CourseClassId = request.CourseClassId,
               Course = course,
-              TeacherName = request.TeacherName,
-              Schedule = request.Schedule,
+              TeacherName = request.TeacherName
           };
             _context.CourseClassroom.Add(courseClassroom);
             try

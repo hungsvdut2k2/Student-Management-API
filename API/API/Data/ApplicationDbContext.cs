@@ -29,5 +29,6 @@ namespace API.Data
         public DbSet<Faculty>  Faculty { get; set; }
         public DbSet<Score> Score { get; set; }
         public DbSet<UserCourse> UserCourse { get; set; }
+        public DbSet<Schedule> Schedule { get; set; }
     }
 }

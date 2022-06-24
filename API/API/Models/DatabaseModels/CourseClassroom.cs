@@ -8,7 +8,6 @@ namespace API.Models.DatabaseModels
         [Key]
         public string CourseClassId { get; set; }
         public string TeacherName { get; set; }
-        public string Schedule { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Course Course { get; set; }
         public string CourseId { get; set; }
