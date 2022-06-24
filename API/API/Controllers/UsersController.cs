@@ -45,6 +45,10 @@ namespace API.Controllers
         public async Task<ActionResult<User>> Get(string id)
         {
             User userInformation = await _context.User.FindAsync(id);
+            if(userInformation == null)
+            {
+                return NotFound("User not found");
+            }
             Classroom classroom = _context.Classroom.Find(userInformation.ClassroomId);
             Faculty faculty = await _context.Faculty.FindAsync(classroom.FacultyId);
             EducationalProgram educationalProgram = _context.EducationalProgram.Find(classroom.EducationalProgramId);
