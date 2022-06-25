@@ -20,9 +20,9 @@ namespace API.Controllers
         }
 
         [HttpGet("{courseClassId}")]
-        public async Task<ActionResult<Schedule>> Get(string courseClassId)
+        public async Task<ActionResult<List<Schedule>>> Get(string courseClassId)
         {
-            var schedule = _context.Schedule.Where(w => w.CourseClassId == courseClassId).FirstOrDefault();
+            var schedule = _context.Schedule.Where(w => w.CourseClassId == courseClassId).ToList();
             if(schedule == null)
                 return NotFound();
             return Ok(schedule);
