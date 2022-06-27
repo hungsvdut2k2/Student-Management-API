@@ -27,18 +27,27 @@ namespace API.Controllers
 
         // GET: api/CourseClassrooms
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CourseClassroom>>> GetCourseClassroom()
+        public async Task<ActionResult<IEnumerable<ReturnedCourseClassroomDto>>> GetCourseClassroom()
         {
-          if (_context.CourseClassroom == null)
-          {
-              return NotFound();
-          }
-            return await _context.CourseClassroom.ToListAsync();
+            List<CourseClassroom> courseClassrooms = _context.CourseClassroom.ToList();
+            List<ReturnedCourseClassroomDto> resList = new List<ReturnedCourseClassroomDto>();
+            foreach (var courseClassroom in courseClassrooms)
+            {
+                var schedule = _context.Schedule.Where(w => w.CourseClassId == courseClassroom.CourseClassId).ToList();
+                var tempData = new ReturnedCourseClassroomDto()
+                {
+                    CourseClassroom = courseClassroom,
+                    Schedule = schedule
+                };
+                resList.Add(tempData);
+            }
+
+            return Ok(resList);
         }
 
         // GET: api/CourseClassrooms/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CourseClassroom>> GetCourseClassroom(string id)
+        public async Task<ActionResult<ReturnedCourseClassroomDto>> GetCourseClassroom(string id)
         {
           if (_context.CourseClassroom == null)
           {
@@ -50,16 +59,33 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-
-            return courseClassroom;
+            var schedule = _context.Schedule.Where(w => w.CourseClassId == courseClassroom.CourseClassId).ToList();
+            var result = new ReturnedCourseClassroomDto
+            {
+                CourseClassroom = courseClassroom,
+                Schedule = schedule
+            };
+            return Ok(result);
         }
 
         [HttpGet("course/{courseId}")]
-        public async Task<ActionResult<IEnumerable<CourseClassroom>>> GetAllCourseClassroomByCourse(string courseId)
+        public async Task<ActionResult<IEnumerable<ReturnedCourseClassroomDto>>> GetAllCourseClassroomByCourse(string courseId)
         {
             IEnumerable<CourseClassroom> courseClassrooms =
                 _context.CourseClassroom.Where(courseClass => courseClass.CourseId == courseId).ToList();
-            return Ok(courseClassrooms);
+            List<ReturnedCourseClassroomDto> resList = new List<ReturnedCourseClassroomDto>();
+            foreach (var courseClassroom in courseClassrooms)
+            {
+                var schedule = _context.Schedule.Where(w => w.CourseClassId == courseClassroom.CourseClassId).ToList();
+                var tempData = new ReturnedCourseClassroomDto()
+                {
+                    CourseClassroom = courseClassroom,
+                    Schedule = schedule
+                };
+                resList.Add(tempData);
+            }
+
+            return Ok(resList);
         }
         // POST: api/CourseClassrooms
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
