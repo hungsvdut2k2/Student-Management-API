@@ -60,17 +60,23 @@ namespace API.Controllers
 
         [HttpGet("course/{id}")]
 
-        public async Task<ActionResult<IEnumerable<Course>>> GetAllCourseInEducationalProgram(string id)
+        public async Task<ActionResult<IEnumerable<ReturnedInEPDTO>>> GetAllCourseInEducationalProgram(string id)
         {
             IEnumerable<CourseEducationProgram> courseEducationProgrames = _context.CourseEducationProgram.Where(courseEdu => courseEdu.EducationalProgramId == id).ToList();
-            List<Course> courses = new List<Course>();
+            List<ReturnedInEPDTO> reslist = new List<ReturnedInEPDTO>();
             foreach (var courseEducation in courseEducationProgrames)
             {
                 Course findingCourse = _context.Courses.Find(courseEducation.CourseId);
-                courses.Add(findingCourse);
+
+                var newDTO = new ReturnedInEPDTO
+                {
+                    Course = findingCourse,
+                    Semester = courseEducation.Semester
+                };
+                reslist.Add(newDTO);
             }
 
-            return Ok(courses);
+            return Ok(reslist);
         }
         // POST: api/EducationalPrograms
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
