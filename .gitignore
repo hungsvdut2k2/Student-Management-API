@@ -370,3 +370,4 @@ Properties/serviceDependencies*
 appsettings.json
 CloudinaryAccount.cs
 wwwroot
+EmailAccount.cs

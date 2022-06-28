@@ -1,4 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -10,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using netcuoiky;
 using OfficeOpenXml;
 
 namespace API.Controllers
@@ -23,7 +26,6 @@ namespace API.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
         public static IWebHostEnvironment _enviroment;
-
         public AccountsController(ApplicationDbContext context, IConfiguration configuration,
             IWebHostEnvironment environment)
         {
@@ -164,6 +166,51 @@ namespace API.Controllers
             return BadRequest("Wrong Password");
         }
 
+        [HttpPost("send-email/{userId}/{email}")]
+        public async Task<ActionResult<int>> SendEmail(string userId, string email)
+        {
+            //validation for email
+            User user = _context.User.Find(userId);
+            if (user.Email == email)
+            {
+                Random random = new Random();
+                int code = random.Next(123123, 999999);
+                EmailAccount emailAccount = new EmailAccount();
+                string p = emailAccount.Password;
+                MailMessage message = new MailMessage();
+                message.From = new MailAddress(emailAccount.Email);
+                message.To.Add(new MailAddress(email));
+                message.Subject = "change password";
+                message.Body = "Write this given code on text box\n" + code + "\nThank you!";
+                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
+                {
+                    smtp.Credentials = new NetworkCredential("viethungnguyen2002@gmail.com", p);
+                    smtp.EnableSsl = true;
+                    smtp.Send(message);
+                }
+
+                return Ok(code);
+            }
+            return BadRequest("Wrong Email");
+        }
+
+        //[HttpPut("forgot-password")]
+        //public async Task<ActionResult<Account>> ForgotPassword(ForgotPasswordDto request)
+        //{
+        //    var result = await SendEmail(request.UserId, request.Email);
+        //    var castResult = (OkObjectResult)result.Result;
+        //    var finalResult = Convert.ToInt32(castResult.Value);
+        //    if (request.Code == finalResult)
+        //    {
+        //        Account user = await _context.Account.Where(w => w.Username == request.UserId).FirstAsync();
+        //        CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        //        user.PasswordHash = passwordHash;
+        //        user.PasswordSalt = passwordSalt;
+        //        return Ok(user);
+        //    }
+
+        //    return BadRequest("Wrong Code");
+        //}
         private bool Verified(string password, byte[] passwordHash, byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512(passwordSalt))
@@ -200,19 +247,17 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            User userInformation = await _context.User
-                .Where(w => w.UserId == user.UserId).FirstOrDefaultAsync();
-            if (userInformation.PhoneNumber != request.PhoneNumber || userInformation.Email != request.Email)
+            if (Verified(request.OldPassword, user.PasswordHash, user.PasswordSalt) == true)
             {
-                return BadRequest("Uncertain Information");
+                CreatePasswordHash(request.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+                await _context.SaveChangesAsync();
+                return Ok(user);
             }
-
-            CreatePasswordHash(request.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
-            await _context.SaveChangesAsync();
-            return Ok(user);
+            return BadRequest("Wrong Password");
         }
+
         [Route("{username}")]
         [HttpDelete]
         public async Task<ActionResult<User>> Delete(string username)
@@ -224,6 +269,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
         public class FileUpLoadAPI
         {
             public IFormFile files { get; set; }
