@@ -23,7 +23,7 @@ namespace API.Controllers
         public async Task<ActionResult<List<Schedule>>> Get(string courseClassId)
         {
             var schedule = _context.Schedule.Where(w => w.CourseClassId == courseClassId).ToList();
-            if(schedule == null)
+            if (schedule == null)
                 return NotFound();
             return Ok(schedule);
         }
@@ -81,6 +81,7 @@ namespace API.Controllers
             {
                 return Ok(e.Message);
             }
+
             return Ok(newSchedule);
         }
     }
