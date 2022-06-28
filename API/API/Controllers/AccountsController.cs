@@ -171,10 +171,13 @@ namespace API.Controllers
         {
             //validation for email
             User user = _context.User.Find(userId);
+            Account account = _context.Account.Where(w => w.UserId == userId).FirstOrDefault();
             if (user.Email == email)
             {
                 Random random = new Random();
                 int code = random.Next(123123, 999999);
+                account.RefreshToken = code;
+                _context.SaveChanges();
                 EmailAccount emailAccount = new EmailAccount();
                 string p = emailAccount.Password;
                 MailMessage message = new MailMessage();
@@ -189,28 +192,34 @@ namespace API.Controllers
                     smtp.Send(message);
                 }
 
-                return Ok(code);
+                return Ok(account);
             }
             return BadRequest("Wrong Email");
         }
 
-        //[HttpPut("forgot-password")]
-        //public async Task<ActionResult<Account>> ForgotPassword(ForgotPasswordDto request)
-        //{
-        //    var result = await SendEmail(request.UserId, request.Email);
-        //    var castResult = (OkObjectResult)result.Result;
-        //    var finalResult = Convert.ToInt32(castResult.Value);
-        //    if (request.Code == finalResult)
-        //    {
-        //        Account user = await _context.Account.Where(w => w.Username == request.UserId).FirstAsync();
-        //        CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
-        //        user.PasswordHash = passwordHash;
-        //        user.PasswordSalt = passwordSalt;
-        //        return Ok(user);
-        //    }
+        [HttpPost("verify-token/{token}")]
+        public async Task<IActionResult> VerifyToken(int token)
+        {
+            var account = _context.Account.Where(w => w.RefreshToken == token).FirstOrDefault();
+            if (account == null)
+            {
+                return BadRequest("Wrong Code");
+            }
+            //reset the token
+            account.RefreshToken = null;
+            _context.SaveChanges();
+            return Ok();
+        }
+        [HttpPut("forgot-password")]
+        public async Task<ActionResult<Account>> ForgotPassword(ForgotPasswordDto request)
+        {
+            Account account = _context.Account.Where(w => w.UserId == request.UserId).FirstOrDefault();
+            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            account.PasswordHash = passwordHash;
+            account.PasswordSalt = passwordSalt;
+            return Ok(account);
+        }
 
-        //    return BadRequest("Wrong Code");
-        //}
         private bool Verified(string password, byte[] passwordHash, byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512(passwordSalt))
