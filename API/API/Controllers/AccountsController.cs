@@ -225,6 +225,7 @@ namespace API.Controllers
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
             account.PasswordHash = passwordHash;
             account.PasswordSalt = passwordSalt;
+            _context.SaveChanges();
             return Ok(account);
         }
 
