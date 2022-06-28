@@ -105,6 +105,7 @@ namespace API.Controllers
           {
               CourseClassId = request.CourseClassId,
               Course = course,
+              isComplete = false,
               TeacherName = request.TeacherName
           };
             _context.CourseClassroom.Add(courseClassroom);

@@ -45,7 +45,7 @@ namespace API.Controllers
                 Email = request.Email,
                 Gender = request.Gender,
                 ImageUrl = string.Empty,
-                Classroom = classroom,
+                Classroom = classroom
             };
             string Password = randomPassword();
             _context.User.Add(user);

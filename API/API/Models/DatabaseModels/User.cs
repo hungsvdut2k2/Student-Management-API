@@ -16,6 +16,6 @@ namespace API.Models.DatabaseModels
         [System.Text.Json.Serialization.JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public Classroom Classroom { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public string ClassroomId { get; set; }
+        public string? ClassroomId { get; set; }
     }
 }
