@@ -199,9 +199,9 @@ namespace API.Controllers
             }
             return BadRequest("Wrong Email");
         }
-        [HttpPost("verify-token/{token}")]
+        [HttpPost("verify-token/{token}/{userId}")]
         [AllowAnonymous]
-        public async Task<IActionResult> VerifyToken(int token)
+        public async Task<IActionResult> VerifyToken(int token, string userId)
         {
             var account = _context.Account.Where(w => w.RefreshToken == token).FirstOrDefault();
             if (account == null)
@@ -209,9 +209,13 @@ namespace API.Controllers
                 return BadRequest("Wrong Code");
             }
             //reset the token
-            account.RefreshToken = null;
-            _context.SaveChanges();
-            return Ok();
+            if (account.UserId == userId)
+            {
+                account.RefreshToken = null;
+                _context.SaveChanges();
+                return Ok();
+            }
+            return BadRequest("Wrong Code");
         }
         [HttpPut("forgot-password")]
         [AllowAnonymous]
