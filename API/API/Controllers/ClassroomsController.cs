@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 
 namespace API.Controllers
@@ -26,6 +27,7 @@ namespace API.Controllers
 
         // GET: api/Classrooms
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Classroom>>> GetClassroom()
         {
           if (_context.Classroom == null)
@@ -37,6 +39,7 @@ namespace API.Controllers
 
         // GET: api/Classrooms/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Classroom>> GetClassroom(string id)
         {
           if (_context.Classroom == null)
@@ -57,6 +60,7 @@ namespace API.Controllers
         // POST: api/Classrooms
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Classroom>> PostClassroom(CreateClassroomDto request)
         {
           if (_context.Classroom == null)
@@ -110,6 +114,7 @@ namespace API.Controllers
 
         // DELETE: api/Classrooms/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteClassroom(string id)
         {
             if (_context.Classroom == null)

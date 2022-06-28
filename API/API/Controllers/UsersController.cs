@@ -10,6 +10,7 @@ using API.Models.DatabaseModels;
 using API.Models.DtoModels;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Account = API.Models.DatabaseModels.Account;
 
@@ -30,6 +31,7 @@ namespace API.Controllers
 
         // GET: api/Users
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
             if (_context.User == null)
@@ -42,6 +44,7 @@ namespace API.Controllers
 
         // GET: api/Users/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<User>> Get(string id)
         {
             User userInformation = await _context.User.FindAsync(id);
@@ -62,6 +65,7 @@ namespace API.Controllers
             return Ok(returnedInformation);
         }
         [HttpGet("class/{classroomId}")]
+        [Authorize(Roles = "Admin, Teacher")]
         public async Task<ActionResult<List<User>>> GetAllStudentInClass(string classroomId)
         {
             var studentList = _context.User.Where(w => w.ClassroomId == classroomId).ToList();
@@ -69,6 +73,7 @@ namespace API.Controllers
         }
 
         [HttpGet("faculty/{facultyId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<Classroom>>> GetAllStudentInFaculty(string facultyId)
         {
             Faculty faculty = await _context.Faculty.FindAsync(facultyId);
@@ -86,6 +91,7 @@ namespace API.Controllers
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{userId}")]
+        [Authorize]
         public async Task<IActionResult> PutUser(string userId, InformationDto request)
         {
             User newUserInformation = await _context.User.FindAsync(userId);
@@ -103,6 +109,7 @@ namespace API.Controllers
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             if (_context.User == null)
@@ -122,6 +129,7 @@ namespace API.Controllers
             return NoContent();
         }
         [HttpGet("course-class/{UserId}")]
+        [Authorize(Roles = "Admin, Teacher")]
         public async Task<ActionResult<List<CourseClassroom>>> GetAllCourseClassroom(string UserId)
         {
             var classList = (from w in _context.UserCourseClassroom
@@ -145,64 +153,66 @@ namespace API.Controllers
             public IFormFile files { get; set; }
         }
 
-        //[HttpPost("image-upload/{userId}")]
-        //public async Task<ActionResult<string>> UploadImage([FromForm] FileUpLoadAPI objFiles, string userId)
-        //{
-        //     CloudinaryAccount cloudinaryAccount = new CloudinaryAccount();
-        //    var account = new CloudinaryDotNet.Account(
-        //    cloud: cloudinaryAccount.Cloud,
-        //    apiKey: cloudinaryAccount.ApiKey,
-        //    apiSecret: cloudinaryAccount.ApiSecret);
+        [HttpPost("image-upload/{userId}")]
+        [Authorize]
+        public async Task<ActionResult<string>> UploadImage([FromForm] FileUpLoadAPI objFiles, string userId)
+        {
+            CloudinaryAccount cloudinaryAccount = new CloudinaryAccount();
+            var account = new CloudinaryDotNet.Account(
+            cloud: cloudinaryAccount.Cloud,
+            apiKey: cloudinaryAccount.ApiKey,
+            apiSecret: cloudinaryAccount.ApiSecret);
 
 
-        //    Cloudinary cloudinary = new Cloudinary(account);
-        //    cloudinary.Api.Secure = true;
-        //    User userInformation = _context.User.Find(userId);
-        //    try
-        //    {
-        //        if (objFiles.files.Length > 0)
-        //        {
-        //            if (!Directory.Exists(_enviroment.WebRootPath + "\\Upload\\"))
-        //            {
-        //                Directory.CreateDirectory(_enviroment.WebRootPath + "\\Upload\\");
-        //            }
+            Cloudinary cloudinary = new Cloudinary(account);
+            cloudinary.Api.Secure = true;
+            User userInformation = _context.User.Find(userId);
+            try
+            {
+                if (objFiles.files.Length > 0)
+                {
+                    if (!Directory.Exists(_enviroment.WebRootPath + "\\Upload\\"))
+                    {
+                        Directory.CreateDirectory(_enviroment.WebRootPath + "\\Upload\\");
+                    }
 
-        //            using (FileStream fileStream =
-        //                   System.IO.File.Create(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId))
-        //            {
-        //                objFiles.files.CopyTo(fileStream);
-        //                fileStream.Flush();
-        //            }
+                    using (FileStream fileStream =
+                           System.IO.File.Create(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId))
+                    {
+                        objFiles.files.CopyTo(fileStream);
+                        fileStream.Flush();
+                    }
 
-        //            if (userInformation.ImageUrl != String.Empty)
-        //            {
-        //                var deletedParam = new DeletionParams(userInformation.UserId);
-        //                cloudinary.Destroy(deletedParam);
-        //            }
+                    if (userInformation.ImageUrl != String.Empty)
+                    {
+                        var deletedParam = new DeletionParams(userInformation.UserId);
+                        cloudinary.Destroy(deletedParam);
+                    }
 
-        //            var uploadParams = new ImageUploadParams()
-        //            {
-        //                File = new FileDescription(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId),
-        //                PublicId = userInformation.UserId
-        //            };
-        //            var uploadResult = cloudinary.Upload(uploadParams);
-        //            System.IO.File.Delete(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId);
-        //            userInformation.ImageUrl = uploadResult.PublicId;
-        //            _context.SaveChanges();
-        //            return Ok(uploadResult.Url);
-        //        }
-        //        else
-        //        {
-        //            return "failed";
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId),
+                        PublicId = userInformation.UserId
+                    };
+                    var uploadResult = cloudinary.Upload(uploadParams);
+                    System.IO.File.Delete(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId);
+                    userInformation.ImageUrl = uploadResult.PublicId;
+                    _context.SaveChanges();
+                    return Ok(uploadResult.Url);
+                }
+                else
+                {
+                    return "failed";
+                }
+            }
+            catch (Exception e)
+            {
 
-        //        return e.Message.ToString();
-        //    }
-        //}
+                return e.Message.ToString();
+            }
+        }
         [HttpGet("teacher/course-classroom/{teacherName}")]
+        [Authorize(Roles = "Teacher")]
         public async Task<ActionResult<List<CourseClassroom>>> GetAllClassesOfTeacher(string teacherName)
         {
             List<CourseClassroom> courseClassrooms = _context.CourseClassroom

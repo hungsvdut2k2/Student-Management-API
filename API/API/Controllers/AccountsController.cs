@@ -7,6 +7,7 @@ using System.Text;
 using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,7 @@ namespace API.Controllers
             _enviroment = environment;
         }
         [HttpPost("register")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<LoginDto>> Register(RegisterDto request)
         {
             Classroom classroom = _context.Classroom.Where(findingClass => findingClass.Name == request.ClassName)
@@ -149,6 +151,7 @@ namespace API.Controllers
             }
         }
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult<string>> Login(LoginDto request)
         {
             Account user = await _context.Account.Where(w => w.Username == request.Username).FirstAsync();
@@ -165,8 +168,8 @@ namespace API.Controllers
 
             return BadRequest("Wrong Password");
         }
-
         [HttpPost("send-email/{userId}/{email}")]
+        [AllowAnonymous]
         public async Task<ActionResult<int>> SendEmail(string userId, string email)
         {
             //validation for email
@@ -196,8 +199,8 @@ namespace API.Controllers
             }
             return BadRequest("Wrong Email");
         }
-
         [HttpPost("verify-token/{token}")]
+        [AllowAnonymous]
         public async Task<IActionResult> VerifyToken(int token)
         {
             var account = _context.Account.Where(w => w.RefreshToken == token).FirstOrDefault();
@@ -211,6 +214,7 @@ namespace API.Controllers
             return Ok();
         }
         [HttpPut("forgot-password")]
+        [AllowAnonymous]
         public async Task<ActionResult<Account>> ForgotPassword(ForgotPasswordDto request)
         {
             Account account = _context.Account.Where(w => w.UserId == request.UserId).FirstOrDefault();
@@ -248,6 +252,7 @@ namespace API.Controllers
             return jwt;
         }
         [HttpPut("reset-password")]
+        [Authorize]
         public async Task<ActionResult<User>> ResetPassword(ResetPasswordDto request)
         {
             Account user = await _context.Account.Where(w => w.Username == request.Username).FirstAsync();
@@ -266,7 +271,7 @@ namespace API.Controllers
             }
             return BadRequest("Wrong Password");
         }
-
+        [Authorize(Roles = "Admin")]
         [Route("{username}")]
         [HttpDelete]
         public async Task<ActionResult<User>> Delete(string username)
@@ -283,7 +288,7 @@ namespace API.Controllers
         {
             public IFormFile files { get; set; }
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("upload-file")]
         public async Task<ActionResult<List<LoginDto>>> uploadFile([FromForm] FileUpLoadAPI data)
         {

@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,7 @@ namespace API.Controllers
         }
         [Route("class/{courseClassId}")]
         [HttpGet]
+        [Authorize(Roles = "Teacher")]
         public async Task<ActionResult<List<ReturnedScore>>> GetScoreByClass(string courseClassId)
         {
             List<Score> scoreList = (from w in _context.Score
@@ -49,6 +51,7 @@ namespace API.Controllers
         }
         [Route("student/{userInformationId}")]
         [HttpGet]
+        [Authorize(Roles = "Student")]
         public async Task<ActionResult<List<ReturnedScoreOfStudent>>> GetAllScore(string userInformationId)
         {
             var scoreList = (from w in _context.Score
@@ -76,6 +79,7 @@ namespace API.Controllers
         }
         [Route("{userInformationId}/{courseClassId}")]
         [HttpPut]
+        [Authorize(Roles = "Teacher")]
         public async Task<ActionResult<List<ReturnedScore>>> Update(string userInformationId, string courseClassId, UpdateScoreDto request)
         {
             Score findingScore = await _context.Score

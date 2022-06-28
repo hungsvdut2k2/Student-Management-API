@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
@@ -28,6 +29,7 @@ namespace API.Controllers
 
         // GET: api/CourseClassrooms
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ReturnedCourseClassroomDto>>> GetCourseClassroom()
         {
             List<CourseClassroom> courseClassrooms = _context.CourseClassroom.ToList();
@@ -48,6 +50,7 @@ namespace API.Controllers
 
         // GET: api/CourseClassrooms/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<ReturnedCourseClassroomDto>> GetCourseClassroom(string id)
         {
           if (_context.CourseClassroom == null)
@@ -70,6 +73,7 @@ namespace API.Controllers
         }
 
         [HttpGet("course/{courseId}")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ReturnedCourseClassroomDto>>> GetAllCourseClassroomByCourse(string courseId)
         {
             IEnumerable<CourseClassroom> courseClassrooms =
@@ -91,6 +95,7 @@ namespace API.Controllers
         // POST: api/CourseClassrooms
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CourseClassroom>> PostCourseClassroom(CreateCourseClassroomDto request)
         {
           if (_context.CourseClassroom == null)
@@ -131,6 +136,7 @@ namespace API.Controllers
 
         // DELETE: api/CourseClassrooms/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCourseClassroom(string id)
         {
             if (_context.CourseClassroom == null)
@@ -154,6 +160,7 @@ namespace API.Controllers
             return (_context.CourseClassroom?.Any(e => e.CourseClassId == id)).GetValueOrDefault();
         }
         [HttpGet("user/{userId}")]
+        [Authorize(Roles = "Student")]
         public async Task<ActionResult<ReturnedCourseClassroomDto>> GetAllRegisteredCourseClassroom(string userId)
         {
             List<UserCourseClassroom> userCourseClassroom = _context.UserCourseClassroom
@@ -176,6 +183,7 @@ namespace API.Controllers
         }
 
         [HttpPost("user/{userId}/{courseClassId}")]
+        [Authorize(Roles = "Student")]
         public async Task<ActionResult<UserCourseClassroom>> RegisterCourseClass(string userId, string courseClassId)
         {
             User userInformation = await _context.User.FindAsync(userId);
@@ -218,6 +226,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("user/{userId}/{courseClassId}")]
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> UnregisterCourseClass(string userId, string courseClassId)
         {
             UserCourseClassroom userCourseClassroom = _context.UserCourseClassroom.Where(userCourseClass =>

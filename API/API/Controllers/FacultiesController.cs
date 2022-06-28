@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 
 namespace API.Controllers
@@ -27,6 +28,7 @@ namespace API.Controllers
 
         // GET: api/Faculties
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Faculty>>> GetFaculty()
         {
           if (_context.Faculty == null)
@@ -38,6 +40,7 @@ namespace API.Controllers
 
         // GET: api/Faculties/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Faculty>> GetFaculty(string id)
         {
           if (_context.Faculty == null)
@@ -55,6 +58,7 @@ namespace API.Controllers
         }
 
         [HttpGet("classes/{facultyId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Classroom>>> GetAllClassesInFaculty(string facultyId)
         {
             List<Classroom> classrooms =
@@ -66,6 +70,7 @@ namespace API.Controllers
         // POST: api/Faculties
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Faculty>> PostFaculty(CreateFacultyDto request)
         {
           if (_context.Faculty == null)
@@ -100,6 +105,7 @@ namespace API.Controllers
 
         // DELETE: api/Faculties/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteFaculty(string id)
         {
             if (_context.Faculty == null)

@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{scheduleId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Schedule>> Update(CreateScheduleDto request, int scheduleId)
         {
             Schedule schedule = _context.Schedule.Find(scheduleId);
@@ -58,6 +60,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Schedule>> PostSchedule(CreateScheduleDto request)
         {
             CourseClassroom courseClassroom = _context.CourseClassroom.Find(request.courseClassId);

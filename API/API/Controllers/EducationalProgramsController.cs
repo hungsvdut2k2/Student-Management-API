@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using OfficeOpenXml;
 
@@ -31,6 +32,7 @@ namespace API.Controllers
 
         // GET: api/EducationalPrograms
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<EducationalProgram>>> GetEducationalProgram()
         {
           if (_context.EducationalProgram == null)
@@ -42,6 +44,7 @@ namespace API.Controllers
 
         // GET: api/EducationalPrograms/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<EducationalProgram>> GetEducationalProgram(string id)
         {
           if (_context.EducationalProgram == null)
@@ -59,7 +62,7 @@ namespace API.Controllers
         }
 
         [HttpGet("course/{id}")]
-
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ReturnedInEPDTO>>> GetAllCourseInEducationalProgram(string id)
         {
             IEnumerable<CourseEducationProgram> courseEducationProgrames = _context.CourseEducationProgram.Where(courseEdu => courseEdu.EducationalProgramId == id).ToList();
@@ -81,6 +84,7 @@ namespace API.Controllers
         // POST: api/EducationalPrograms
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<EducationalProgram>> PostEducationalProgram(CreateEducationalProgramDto request)
         {
           if (_context.EducationalProgram == null)
@@ -114,6 +118,7 @@ namespace API.Controllers
 
         // DELETE: api/EducationalPrograms/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteEducationalProgram(string id)
         {
             if (_context.EducationalProgram == null)
@@ -133,6 +138,7 @@ namespace API.Controllers
         }
         //Add course to Educational Program
         [HttpPost("course")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CourseEducationProgram>> AddCourse(AddCourseToEducationalProgramDto request)
         {
             Course course = _context.Courses.Find(request.CourseId);
@@ -157,6 +163,7 @@ namespace API.Controllers
             public IFormFile files { get; set; }
         }
         [HttpPost("upload-file")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<CreateCourseDto>>> UploadTask([FromForm] FileUpLoadAPI data)
         {
             //download file from client

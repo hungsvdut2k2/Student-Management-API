@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using API.Data;
 using API.Models.DatabaseModels;
 using API.Models.DtoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using OfficeOpenXml;
 
@@ -30,6 +31,7 @@ namespace API.Controllers
 
         // GET: api/Courses
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Course>>> GetCourses()
         {
             if (_context.Courses == null)
@@ -42,6 +44,7 @@ namespace API.Controllers
 
         // GET: api/Courses/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Course>> GetCourse(string id)
         {
             if (_context.Courses == null)
@@ -62,6 +65,7 @@ namespace API.Controllers
         // POST: api/Courses
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Course>> PostCourse(CreateCourseDto request)
         {
             if (_context.Courses == null)
@@ -97,6 +101,7 @@ namespace API.Controllers
         }
         // DELETE: api/Courses/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCourse(string id)
         {
             if (_context.Courses == null)
@@ -122,6 +127,7 @@ namespace API.Controllers
         }
 
         [HttpGet("user/{userId}")]
+        [Authorize(Roles = "Student")]
         public async Task<ActionResult<List<Course>>> GetAvailableCourse(string userId)
         {
             User user = _context.User.Find(userId);
@@ -190,6 +196,7 @@ namespace API.Controllers
         }
 
         [HttpPost("upload-file")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<CreateCourseDto>>> UploadTask([FromForm] FileUpLoadAPI data)
         {
             //download file from client
