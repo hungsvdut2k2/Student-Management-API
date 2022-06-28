@@ -195,7 +195,7 @@ namespace API.Controllers
                     smtp.Send(message);
                 }
 
-                return Ok(account);
+                return Ok();
             }
             return BadRequest("Wrong Email");
         }
