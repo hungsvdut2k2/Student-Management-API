@@ -192,7 +192,7 @@ namespace API.Controllers
                     var uploadParams = new ImageUploadParams()
                     {
                         File = new FileDescription(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId),
-                        PublicId = userInformation.UserId
+                        PublicId = userInformation.UserId.Substring(0,3) + "/" + userInformation.UserId
                     };
                     var uploadResult = cloudinary.Upload(uploadParams);
                     System.IO.File.Delete(_enviroment.WebRootPath + "\\Upload\\" + userInformation.UserId);

@@ -91,7 +91,7 @@ namespace API.Controllers
                         PhoneNumber = request.PhoneNumber,
                         Email = request.Email,
                         Gender = request.Gender,
-                        ImageUrl = string.Empty,
+                        ImageUrl = request.UserId.Substring(0,3) + "/" + request.UserId,
                         Classroom = classroom
                     };
                     string Password = randomPassword();

@@ -62,6 +62,30 @@ namespace API.Controllers
             return course;
         }
 
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<Course>> UpdateCourse(CreateCourseDto request)
+        {
+            Course course = _context.Courses.Find(request.CourseId);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            course.requiredCourseId = request.requiredCourseId;
+            course.Credits = request.Credits;
+            course.Name = request.Name;
+            course.isAvailable = request.isAvailable;
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+            return Ok(course);
+        }
         // POST: api/Courses
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]

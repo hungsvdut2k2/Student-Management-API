@@ -112,7 +112,8 @@ namespace API.Controllers
               CourseClassId = request.CourseClassId,
               Course = course,
               isComplete = false,
-              TeacherName = request.TeacherName
+              TeacherName = request.TeacherName,
+              Capacity = request.Capacity
           };
             _context.CourseClassroom.Add(courseClassroom);
             try
@@ -139,6 +140,7 @@ namespace API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCourseClassroom(string id)
         {
+            var schedule = _context.Schedule.Where(w => w.CourseClassId == id);
             if (_context.CourseClassroom == null)
             {
                 return NotFound();
@@ -148,7 +150,7 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-
+            _context.Schedule.RemoveRange(schedule);
             _context.CourseClassroom.Remove(courseClassroom);
             await _context.SaveChangesAsync();
 
@@ -182,6 +184,19 @@ namespace API.Controllers
             return Ok(registeredCourseClassroom);
         }
 
+        [HttpPut("finish-all-classes")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IEnumerable<CourseClassroom>> CompletedAllClasses()
+        {
+            List<CourseClassroom> courseClassrooms = _context.CourseClassroom.ToList();
+            foreach (var item in courseClassrooms)
+            {
+                item.isComplete = true;
+            }
+
+            _context.SaveChanges();
+            return courseClassrooms;
+        }
         [HttpPost("user/{userId}/{courseClassId}")]
         [Authorize(Roles = "Student")]
         public async Task<ActionResult<UserCourseClassroom>> RegisterCourseClass(string userId, string courseClassId)
@@ -194,30 +209,35 @@ namespace API.Controllers
             {
                 if (checkConflictSchedule(userId, courseClassId))
                 {
-                    UserCourseClassroom courseUserInformation = new UserCourseClassroom
+                    if (isFull(courseClassId) == false)
                     {
-                        UserId = userId,
-                        User = userInformation,
-                        CourseClassroomId = courseClassId,
-                        CourseClassroom = courseClass
-                    };
-                    Score score = new Score
-                    {
-                        User = userInformation,
-                        UserId = userId,
-                        CourseClassroom = courseClass,
-                        CourseClassroomId = courseClassId,
-                        ExcerciseRate = 0.2,
-                        MidTermRate = 0.3,
-                        FinalTermRate = 0.5,
-                        ExcerciseScore = 0,
-                        MidTermScore = 0,
-                        FinalTermScore = 0
-                    };
-                    _context.Score.Add(score);
-                    _context.UserCourseClassroom.Add(courseUserInformation);
-                    await _context.SaveChangesAsync();
-                    return Ok(courseUserInformation);
+                        UserCourseClassroom courseUserInformation = new UserCourseClassroom
+                        {
+                            UserId = userId,
+                            User = userInformation,
+                            CourseClassroomId = courseClassId,
+                            CourseClassroom = courseClass
+                        };
+                        Score score = new Score
+                        {
+                            User = userInformation,
+                            UserId = userId,
+                            CourseClassroom = courseClass,
+                            CourseClassroomId = courseClassId,
+                            ExcerciseRate = 0.2,
+                            MidTermRate = 0.3,
+                            FinalTermRate = 0.5,
+                            ExcerciseScore = 0,
+                            MidTermScore = 0,
+                            FinalTermScore = 0
+                        };
+                        _context.Score.Add(score);
+                        _context.UserCourseClassroom.Add(courseUserInformation);
+                        await _context.SaveChangesAsync();
+                        return Ok(courseUserInformation);
+                    }
+
+                    return BadRequest("This Classroom Is Full Now");
                 }
 
                 return BadRequest("Conflict Schedule");
@@ -308,6 +328,19 @@ namespace API.Controllers
                     return false;
             }
             return true;
+        }
+
+        private bool isFull(string courseClassId)
+        {
+            List<UserCourseClassroom> userCourseClassrooms = _context.UserCourseClassroom
+                .Where(userCourseClass => userCourseClass.CourseClassroomId == courseClassId).ToList();
+            CourseClassroom courseClassroom = _context.CourseClassroom.Find(courseClassId);
+            if (userCourseClassrooms.Count == courseClassroom.Capacity)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
