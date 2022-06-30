@@ -204,16 +204,24 @@ namespace API.Controllers
                 {
                     Course course = _context.Courses.Find(item.CourseId);
                     EducationalProgram educationalProgram = _context.EducationalProgram.Find(item.EducationalProgramId);
-                    var courseEducationalProgram = new CourseEducationProgram
-                    {
-                        Course = course,
-                        EducationalProgram = educationalProgram,
-                        Semester = item.Semester,
-                    };
+                    CourseEducationProgram courseEducationalProgram = new CourseEducationProgram();
+                    courseEducationalProgram.Course = course;
+                    courseEducationalProgram.EducationalProgram = educationalProgram;
+                    courseEducationalProgram.Semester = item.Semester;
+                    courseEducationalProgram.CourseId = item.CourseId;
+                    courseEducationalProgram.EducationalProgramId = item.EducationalProgramId;
                     courses.Add(courseEducationalProgram);
                 }
+
                 _context.CourseEducationProgram.AddRange(courses);
-                _context.SaveChangesAsync();
+                try
+                {
+                    _context.SaveChangesAsync();
+                }
+                catch (Exception e)
+                {
+                    throw;
+                }
                 return Ok(courses);
             }
 

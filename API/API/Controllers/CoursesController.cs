@@ -245,17 +245,38 @@ namespace API.Controllers
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
                 List<CreateCourseDto> registerList = new List<CreateCourseDto>();
                 List<Course> courses = new List<Course>();
+                List<string> courseId = new List<string>();
                 int rows = worksheet.Dimension.Rows;
                 for (int i = 2; i <= rows; i++)
                 {
-                    var newCourse = new CreateCourseDto
+                    bool flag = true;
+                    string CourseId = worksheet.Cells[i, 3].Text;
+                    for (int j = 0; j < courseId.Count; j++)
                     {
-                        CourseId = worksheet.Cells[i, 3].Text,
-                        Name = worksheet.Cells[i,4].Text,
-                        Credits = Convert.ToDouble(worksheet.Cells[i, 5].Text),
-                        requiredCourseId = worksheet.Cells[i, 6].Text
-                    };
-                    registerList.Add(newCourse);
+                        if (CourseId == courseId[j])
+                        {
+                            flag = false;
+                        }
+                    }
+
+                    if (CourseExists(CourseId))
+                    {
+                        Course course = _context.Courses.Find(CourseId);
+                        course.isAvailable = true;
+                       await _context.SaveChangesAsync();
+                    }
+                    if (flag && CourseExists(CourseId) == false)
+                    {
+                        var newCourse = new CreateCourseDto
+                        {
+                            CourseId = worksheet.Cells[i, 3].Text,
+                            Name = worksheet.Cells[i, 4].Text,
+                            Credits = Convert.ToDouble(worksheet.Cells[i, 5].Text),
+                            requiredCourseId = worksheet.Cells[i, 6].Text
+                        };
+                        registerList.Add(newCourse);
+                        courseId.Add(newCourse.CourseId);
+                    }
                 }
                 foreach (var item in registerList)
                 {
@@ -265,7 +286,7 @@ namespace API.Controllers
                         Name = item.Name,
                         Credits = item.Credits,
                         requiredCourseId = item.requiredCourseId,
-                        isAvailable = true
+                        isAvailable = false
                     };
                     courses.Add(course);
                 }
