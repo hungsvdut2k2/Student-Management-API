@@ -44,7 +44,7 @@ namespace API.Controllers
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<ActionResult<User>> Get(string id)
         {
             User userInformation = await _context.User.FindAsync(id);
@@ -65,7 +65,7 @@ namespace API.Controllers
             return Ok(returnedInformation);
         }
         [HttpGet("class/{classroomId}")]
-        [Authorize(Roles = "Admin, Teacher")]
+        [Authorize]
         public async Task<ActionResult<List<User>>> GetAllStudentInClass(string classroomId)
         {
             var studentList = _context.User.Where(w => w.ClassroomId == classroomId).ToList();
