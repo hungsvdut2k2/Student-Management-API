@@ -65,7 +65,7 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ReturnedInEPDTO>>> GetAllCourseInEducationalProgram(string id)
         {
-            IEnumerable<CourseEducationProgram> courseEducationProgrames = _context.CourseEducationProgram.Where(courseEdu => courseEdu.EducationalProgramId == id).ToList();
+            IEnumerable<CourseEducationProgram> courseEducationProgrames = _context.CourseEducationProgram.Where(courseEdu => courseEdu.EducationalProgramId == id).OrderBy(courseEdu => courseEdu.Semester).ToList();
             List<ReturnedInEPDTO> reslist = new List<ReturnedInEPDTO>();
             foreach (var courseEducation in courseEducationProgrames)
             {
