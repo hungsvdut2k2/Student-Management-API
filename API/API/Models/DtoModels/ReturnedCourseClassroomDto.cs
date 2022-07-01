@@ -6,5 +6,6 @@ namespace API.Models.DtoModels
     {
         public CourseClassroom CourseClassroom { get; set; }
         public List<Schedule> Schedule { get; set; }
+        public int NumberOfRegisteredStudent { get; set; }
     }
 }

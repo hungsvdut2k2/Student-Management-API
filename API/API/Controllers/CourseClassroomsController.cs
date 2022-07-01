@@ -37,10 +37,14 @@ namespace API.Controllers
             foreach (var courseClassroom in courseClassrooms)
             {
                 var schedule = _context.Schedule.Where(w => w.CourseClassId == courseClassroom.CourseClassId).ToList();
+                List<UserCourseClassroom> userCourseClassrooms = _context.UserCourseClassroom
+                    .Where(userCourseClass => userCourseClass.CourseClassroomId == courseClassroom.CourseClassId)
+                    .ToList();
                 var tempData = new ReturnedCourseClassroomDto()
                 {
                     CourseClassroom = courseClassroom,
-                    Schedule = schedule
+                    Schedule = schedule,
+                    NumberOfRegisteredStudent = userCourseClassrooms.Count()
                 };
                 resList.Add(tempData);
             }
@@ -64,10 +68,14 @@ namespace API.Controllers
                 return NotFound();
             }
             var schedule = _context.Schedule.Where(w => w.CourseClassId == courseClassroom.CourseClassId).ToList();
+            List<UserCourseClassroom> userCourseClassrooms = _context.UserCourseClassroom
+                .Where(userCourseClass => userCourseClass.CourseClassroomId == courseClassroom.CourseClassId)
+                .ToList();
             var result = new ReturnedCourseClassroomDto
             {
                 CourseClassroom = courseClassroom,
-                Schedule = schedule
+                Schedule = schedule,
+                NumberOfRegisteredStudent = userCourseClassrooms.Count()
             };
             return Ok(result);
         }
@@ -81,11 +89,15 @@ namespace API.Controllers
             List<ReturnedCourseClassroomDto> resList = new List<ReturnedCourseClassroomDto>();
             foreach (var courseClassroom in courseClassrooms)
             {
+                List<UserCourseClassroom> userCourseClassrooms = _context.UserCourseClassroom
+                    .Where(userCourseClass => userCourseClass.CourseClassroomId == courseClassroom.CourseClassId)
+                    .ToList();
                 var schedule = _context.Schedule.Where(w => w.CourseClassId == courseClassroom.CourseClassId).ToList();
                 var tempData = new ReturnedCourseClassroomDto()
                 {
                     CourseClassroom = courseClassroom,
-                    Schedule = schedule
+                    Schedule = schedule,
+                    NumberOfRegisteredStudent = userCourseClassrooms.Count()
                 };
                 resList.Add(tempData);
             }
@@ -173,11 +185,15 @@ namespace API.Controllers
                 CourseClassroom courseClassroom = _context.CourseClassroom.Where(courseClass =>
                         courseClass.CourseClassId == item.CourseClassroomId && courseClass.isComplete == false)
                     .FirstOrDefault();
+                List<UserCourseClassroom> userCourseClassrooms = _context.UserCourseClassroom
+                    .Where(userCourseClass => userCourseClass.CourseClassroomId == courseClassroom.CourseClassId)
+                    .ToList();
                 List<Schedule> schedules = _context.Schedule.Where(schedule => schedule.CourseClassId == courseClassroom.CourseClassId).ToList();
                 var tempData = new ReturnedCourseClassroomDto
                 {
                     CourseClassroom = courseClassroom,
-                    Schedule = schedules
+                    Schedule = schedules,
+                    NumberOfRegisteredStudent = userCourseClassrooms.Count()
                 };
                 registeredCourseClassroom.Add(tempData);
             }
