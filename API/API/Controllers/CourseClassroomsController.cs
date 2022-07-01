@@ -192,6 +192,7 @@ namespace API.Controllers
                 CourseClassroom courseClassroom = _context.CourseClassroom.Where(courseClass =>
                         courseClass.CourseClassId == item.CourseClassroomId && courseClass.isComplete == false)
                     .FirstOrDefault();
+                User teacher = _context.User.Where(user => user.UserId == courseClassroom.TeacherName).FirstOrDefault();
                 List<UserCourseClassroom> userCourseClassrooms = _context.UserCourseClassroom
                     .Where(userCourseClass => userCourseClass.CourseClassroomId == courseClassroom.CourseClassId)
                     .ToList();
@@ -200,7 +201,8 @@ namespace API.Controllers
                 {
                     CourseClassroom = courseClassroom,
                     Schedule = schedules,
-                    NumberOfRegisteredStudent = userCourseClassrooms.Count()
+                    NumberOfRegisteredStudent = userCourseClassrooms.Count(),
+                    TeacherName = teacher.Name
                 };
                 registeredCourseClassroom.Add(tempData);
             }
