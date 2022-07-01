@@ -36,6 +36,7 @@ namespace API.Controllers
             List<ReturnedCourseClassroomDto> resList = new List<ReturnedCourseClassroomDto>();
             foreach (var courseClassroom in courseClassrooms)
             {
+                var teacher = _context.User.Find(courseClassroom.TeacherName);
                 var schedule = _context.Schedule.Where(w => w.CourseClassId == courseClassroom.CourseClassId).ToList();
                 List<UserCourseClassroom> userCourseClassrooms = _context.UserCourseClassroom
                     .Where(userCourseClass => userCourseClass.CourseClassroomId == courseClassroom.CourseClassId)
@@ -44,7 +45,8 @@ namespace API.Controllers
                 {
                     CourseClassroom = courseClassroom,
                     Schedule = schedule,
-                    NumberOfRegisteredStudent = userCourseClassrooms.Count()
+                    NumberOfRegisteredStudent = userCourseClassrooms.Count(),
+                    TeacherName = teacher.Name
                 };
                 resList.Add(tempData);
             }
@@ -67,6 +69,8 @@ namespace API.Controllers
             {
                 return NotFound();
             }
+
+            var teacher = _context.User.Find(courseClassroom.TeacherName);
             var schedule = _context.Schedule.Where(w => w.CourseClassId == courseClassroom.CourseClassId).ToList();
             List<UserCourseClassroom> userCourseClassrooms = _context.UserCourseClassroom
                 .Where(userCourseClass => userCourseClass.CourseClassroomId == courseClassroom.CourseClassId)
@@ -75,7 +79,8 @@ namespace API.Controllers
             {
                 CourseClassroom = courseClassroom,
                 Schedule = schedule,
-                NumberOfRegisteredStudent = userCourseClassrooms.Count()
+                NumberOfRegisteredStudent = userCourseClassrooms.Count(),
+                TeacherName = teacher.Name
             };
             return Ok(result);
         }
@@ -92,12 +97,14 @@ namespace API.Controllers
                 List<UserCourseClassroom> userCourseClassrooms = _context.UserCourseClassroom
                     .Where(userCourseClass => userCourseClass.CourseClassroomId == courseClassroom.CourseClassId)
                     .ToList();
+                var teacher = _context.User.Find(courseClassroom.TeacherName);
                 var schedule = _context.Schedule.Where(w => w.CourseClassId == courseClassroom.CourseClassId).ToList();
                 var tempData = new ReturnedCourseClassroomDto()
                 {
                     CourseClassroom = courseClassroom,
                     Schedule = schedule,
-                    NumberOfRegisteredStudent = userCourseClassrooms.Count()
+                    NumberOfRegisteredStudent = userCourseClassrooms.Count(),
+                    TeacherName = teacher.Name
                 };
                 resList.Add(tempData);
             }
