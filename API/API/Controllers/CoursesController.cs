@@ -262,7 +262,7 @@ namespace API.Controllers
                     if (CourseExists(CourseId))
                     {
                         Course course = _context.Courses.Find(CourseId);
-                        course.isAvailable = true;
+                        course.isAvailable = !course.isAvailable;
                        await _context.SaveChangesAsync();
                     }
                     if (flag && CourseExists(CourseId) == false)

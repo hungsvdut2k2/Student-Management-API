@@ -158,6 +158,31 @@ namespace API.Controllers
 
             return NotFound();
         }
+
+        //Remove course from Educational Program
+        [HttpDelete("course")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<CourseEducationProgram>> DeleteCourse(DeleteCourseFromEducationalProgramDto request)
+        {
+            CourseEducationProgram courseEducationProgram = _context.CourseEducationProgram
+                .FirstOrDefault(item => item.CourseId == request.CourseId && item.EducationalProgramId == request.EducationalProgramId);
+            if (courseEducationProgram != null)
+            {
+                _context.CourseEducationProgram.Remove(courseEducationProgram);
+                try
+                {
+                    _context.SaveChanges();
+                    return Ok("Deleted");
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            }
+            return NotFound();
+        }
+
+
         public class FileUpLoadAPI
         {
             public IFormFile files { get; set; }
