@@ -213,11 +213,29 @@ namespace API.Controllers
         }
         [HttpGet("teacher/course-classroom/{teacherName}")]
         [Authorize(Roles = "Teacher")]
-        public async Task<ActionResult<List<CourseClassroom>>> GetAllClassesOfTeacher(string teacherName)
+        public async Task<ActionResult<List<ReturnedCourseClassroomDto>>> GetAllClassesOfTeacher(string teacherName)
         {
             List<CourseClassroom> courseClassrooms = _context.CourseClassroom
                 .Where(courseClass => courseClass.TeacherName == teacherName).ToList();
-            return Ok(courseClassrooms);
+            List<ReturnedCourseClassroomDto> resList = new List<ReturnedCourseClassroomDto>();
+            foreach (var courseClass in courseClassrooms)
+            {
+                List<Schedule> schedules = _context.Schedule
+                    .Where(schedule => schedule.CourseClassId == courseClass.CourseClassId).ToList();
+                List<UserCourseClassroom> userCourseClassrooms = _context.UserCourseClassroom
+                    .Where(userCourseClass => userCourseClass.CourseClassroomId == courseClass.CourseClassId)
+                    .ToList();
+                var tempData = new ReturnedCourseClassroomDto()
+                {
+                    CourseClassroom = courseClass, 
+                    Schedule = schedules,
+                    NumberOfRegisteredStudent = userCourseClassrooms.Count(),
+                    TeacherName = teacherName
+                };
+                resList.Add(tempData);
+            }
+
+            return Ok(resList);
         }
     }
 }
