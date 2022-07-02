@@ -35,7 +35,7 @@ namespace API.Controllers
             _enviroment = environment;
         }
         [HttpPost("register")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<ActionResult<LoginDto>> Register(RegisterDto request)
         {
             Classroom classroom = _context.Classroom.Where(findingClass => findingClass.Name == request.ClassName)
