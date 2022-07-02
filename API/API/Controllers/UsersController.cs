@@ -31,7 +31,7 @@ namespace API.Controllers
 
         // GET: api/Users
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
             if (_context.User == null)

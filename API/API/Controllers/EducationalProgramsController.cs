@@ -229,13 +229,19 @@ namespace API.Controllers
                 {
                     Course course = _context.Courses.Find(item.CourseId);
                     EducationalProgram educationalProgram = _context.EducationalProgram.Find(item.EducationalProgramId);
-                    CourseEducationProgram courseEducationalProgram = new CourseEducationProgram();
-                    courseEducationalProgram.Course = course;
-                    courseEducationalProgram.EducationalProgram = educationalProgram;
-                    courseEducationalProgram.Semester = item.Semester;
-                    courseEducationalProgram.CourseId = item.CourseId;
-                    courseEducationalProgram.EducationalProgramId = item.EducationalProgramId;
-                    courses.Add(courseEducationalProgram);
+                    if (course != null && educationalProgram != null)
+                    {
+                        if (CourseEducationalProgramExists(item.CourseId, item.EducationalProgramId) == false)
+                        {
+                            CourseEducationProgram courseEducationalProgram = new CourseEducationProgram();
+                            courseEducationalProgram.Course = course;
+                            courseEducationalProgram.EducationalProgram = educationalProgram;
+                            courseEducationalProgram.Semester = item.Semester;
+                            courseEducationalProgram.CourseId = item.CourseId;
+                            courseEducationalProgram.EducationalProgramId = item.EducationalProgramId;
+                            courses.Add(courseEducationalProgram);
+                        }
+                    }
                 }
 
                 _context.CourseEducationProgram.AddRange(courses);
@@ -255,6 +261,11 @@ namespace API.Controllers
         private bool EducationalProgramExists(string id)
         {
             return (_context.EducationalProgram?.Any(e => e.EducationalProgramId == id)).GetValueOrDefault();
+        }
+
+        private bool CourseEducationalProgramExists(string courseId, string educationalProgramId)
+        {
+            return (_context.CourseEducationProgram?.Any(e => e.EducationalProgramId == educationalProgramId && e.CourseId == courseId)).GetValueOrDefault();
         }
     }
 }
