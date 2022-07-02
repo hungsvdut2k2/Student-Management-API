@@ -90,7 +90,7 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<ReturnedCourseClassroomDto>>> GetAllCourseClassroomByCourse(string courseId)
         {
             IEnumerable<CourseClassroom> courseClassrooms =
-                _context.CourseClassroom.Where(courseClass => courseClass.CourseId == courseId && courseClass.isComplete == false).ToList();
+                _context.CourseClassroom.Where(courseClass => courseClass.CourseId == courseId).ToList();
             List<ReturnedCourseClassroomDto> resList = new List<ReturnedCourseClassroomDto>();
             foreach (var courseClassroom in courseClassrooms)
             {
